@@ -12,7 +12,7 @@ key_store = {
 }
 
 
-def verify_request(method, params):
+def verify_request(method, url, params):
     app_key = params.get("_key")
     if not app_key:
         webapp2.abort(400, "_key and _signature must be provided")
@@ -24,7 +24,9 @@ def verify_request(method, params):
     app_secret = key_store[app_key]
     params = urllib.urlencode(params)
 
-    hashed = hmac.new(app_secret, params, hashlib.sha256)
+    hashed = hmac.new(app_secret, "&".join((method.upper(), url, params)),
+            hashlib.sha256)
     my_signature = binascii.b2a_base64(hashed.digest())
 
-    return my_signature == signature
+    return my_signature == signature    return my_signature == signature
+
