@@ -16,16 +16,8 @@
 #
 
 import json
-import hashlib
-import urllib
 import webapp2
-import hmac
-import binascii
-
-key_store = {
-    "test_app": "hidden_key",
-    "meinzwo": "herforder weihnacht"
-}
+from utils import verify_request
 
 
 def as_json(fun):
@@ -47,17 +39,7 @@ def as_json(fun):
 
 def verified_api_request(func):
     def wrapped(handler, *args, **kwargs):
-        params = handler.request.POST or handler.request.GET
-        app_key = params.get("_key")
-        signature = params.pop("_signature")
-        if not app_key or not signature:
-            webapp2.abort(400, "_key and _signature must be provided")
-        app_secret = key_store[app_key]
-        params = urllib.urlencode(params)
-
-        hashed = hmac.new(app_secret, params, hashlib.sha256)
-        my_signature = binascii.b2a_base64(hashed.digest())
-        if my_signature != signature:
+        if not verify_request(handler.request.method, handler.request.params):
             webapp2.abort(403)
 
         return func(handler, *args, **kwargs)

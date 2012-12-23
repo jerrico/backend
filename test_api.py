@@ -16,8 +16,6 @@ def run():
             "_key": key
         })
     query = urllib.urlencode(params)
-    sha = hashlib.sha256()
-    sha.update(secret + query)
     params["_signature"] = binascii.b2a_base64(
             hmac.new(secret, query, hashlib.sha256).digest())
     print URL, urllib.urlencode(params)
