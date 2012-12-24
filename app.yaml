@@ -9,6 +9,19 @@ handlers:
   static_files: favicon.ico
   upload: favicon\.ico
 
+- url: /
+  static_files: static/index.html
+  upload: static/index.html
+
+- url: /console/
+  login: required
+  static_files: static/console.html
+  upload: static/console.html
+
+- url: /static/(.*\.(gif|png|jpg|js|css|less|ico|woff|tff|svg|eot))
+  static_files: static/\1
+  upload: static/(.*\.(gif|png|jpg|js|css|less|ico|woff|tff|svg|eot))
+
 - url: .*
   script: main.app
 
