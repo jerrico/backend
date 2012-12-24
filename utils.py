@@ -1,16 +1,12 @@
 
+from google.appengine.ext.ndb import Key
+
 import hmac
 import hashlib
 import binascii
 import webapp2
 import json
 import urllib
-
-
-key_store = {
-    "test_app": "hidden_key",
-    "meinzwo": "herforder weihnacht"
-}
 
 
 def verify_request(method, url, params):
@@ -22,11 +18,15 @@ def verify_request(method, url, params):
     if not signature:
         webapp2.abort(400, "_key and _signature must be provided")
 
-    app_secret = key_store[app_key]
+    try:
+        app_secret = Key(urlsafe=app_key).get().secret
+    except Exception:
+        webapp2.abort(401, "Unknown key: {}".format(app_key))
+
     params = urllib.urlencode(params)
 
-    hashed = hmac.new(app_secret, "&".join((method.upper(), url, params)),
-            hashlib.sha256)
+    hashed = hmac.new(app_secret.encode("utf-8"),
+            "&".join((method.upper(), url, params)), hashlib.sha256)
     my_signature = binascii.b2a_base64(hashed.digest())
 
     return my_signature == signature

@@ -7,9 +7,21 @@ import hashlib
 import binascii
 import urllib
 import hmac
+import ndb_tests
+
+from google.appengine.ext.ndb import model
 
 
-class TestVerifier(unittest.TestCase):
+class TestVerifier(ndb_tests.NDBTest):
+
+    def setUp(self):
+        super(TestVerifier, self).setUp()
+
+        class AppAccess(model.Model):
+            secret = model.StringProperty(required=True)
+
+        self.eins_zwo = AppAccess(secret="meine weihnacht").put()
+        self.other_key = AppAccess(secret="secret souce").put()
 
     def test_no_key(self):
         self.assertRaises(webapp2.HTTPException,
@@ -22,15 +34,16 @@ class TestVerifier(unittest.TestCase):
     def test_unknown_key(self):
         self.assertRaises(webapp2.HTTPException,
                 verify_request, "GET", "http://example.com",
-                {"_key": "blabla", "_signature": "faulty"})
+                {"_key": self.other_key.urlsafe()[:4] + "blaa",
+                        "_signature": "faulty"})
 
     def test_faulty_signature(self):
         self.assertFalse(verify_request("GET", "http://example.com",
-                {"_key": "meinzwo", "_signature": "faulty"}))
+                {"_key": self.eins_zwo.urlsafe(), "_signature": "faulty"}))
 
     def test_simple(self):
-        key = "meinzwo"
-        secret = "herforder weihnacht"
+        key = self.eins_zwo.urlsafe()
+        secret = "meine weihnacht"
         params = {"yay": "other", "second": "yes", "_key": key}
         query = '&'.join(("GET", "http://www.example.com",
                     urllib.urlencode(params)))
@@ -41,8 +54,8 @@ class TestVerifier(unittest.TestCase):
                 params))
 
     def test_post(self):
-        key = "meinzwo"
-        secret = "herforder weihnacht"
+        key = self.other_key.urlsafe()
+        secret = "secret souce"
         params = {"yay": "other", "second": "yes", "_key": key}
         query = '&'.join(("POST", "http://www.example.com",
                     urllib.urlencode(params)))
@@ -53,8 +66,8 @@ class TestVerifier(unittest.TestCase):
                     params))
 
     def test_changed_params(self):
-        key = "meinzwo"
-        secret = "herforder weihnacht"
+        key = self.eins_zwo.urlsafe()
+        secret = "meine weihnacht"
         params = {"yay": "other", "second": "yes", "_key": key}
         query = '&'.join(("GET", "http://www.example.com",
                     urllib.urlencode(params)))
