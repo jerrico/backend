@@ -1,7 +1,9 @@
 
 from utils import verify_request
+from webob import MultiDict
 
 import webapp2
+import cgi
 import unittest
 import hashlib
 import binascii
@@ -47,6 +49,34 @@ class TestVerifier(ndb_tests.NDBTest):
         params = {"yay": "other", "second": "yes", "_key": key}
         query = '&'.join(("GET", "http://www.example.com",
                     urllib.urlencode(params)))
+        params["_signature"] = binascii.b2a_base64(
+            hmac.new(secret, query, hashlib.sha256).digest())
+
+        self.assertTrue(verify_request("GET", "http://www.example.com",
+                params))
+
+    def test_lists(self):
+        key = self.eins_zwo.urlsafe()
+        secret = "meine weihnacht"
+        params = {"yay": ["other", "peter", "michael"],
+                "second": "yes", "_key": key}
+        query = '&'.join(("GET", "http://www.example.com",
+                    urllib.urlencode(params)))
+        params["_signature"] = binascii.b2a_base64(
+            hmac.new(secret, query, hashlib.sha256).digest())
+
+        self.assertTrue(verify_request("GET", "http://www.example.com",
+                params))
+
+    def test_unsorted_params(self):
+        key = self.eins_zwo.urlsafe()
+        secret = "meine weihnacht"
+        done_params = "c=b&a=b&_key=" + key
+        query = '&'.join(("GET", "http://www.example.com",
+                    done_params))
+        params = MultiDict(cgi.parse_qsl(
+                done_params, keep_blank_values=True,
+                strict_parsing=False))
         params["_signature"] = binascii.b2a_base64(
             hmac.new(secret, query, hashlib.sha256).digest())
 

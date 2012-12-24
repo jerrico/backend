@@ -36,14 +36,20 @@ def as_json(fun):
     def wrapped(handler, *args, **kwargs):
         handler.response.content_type = "application/json"
         try:
-            handler.response.write(json.dumps(
-                    fun(handler, *args, **kwargs)))
-        except webapp2.HTTPException:
-            raise
+            handler.response.write(json.dumps({
+                    "status": "success",
+                    "result": fun(handler, *args, **kwargs)
+                    }))
+        except webapp2.HTTPException, exc:
+            handler.response.status = exc.code
+            handler.response.write(json.dumps({
+                "status": "error",
+                "message": "{}".format(exc.message)
+            }))
         except Exception, exc:
             handler.response.status = 500
             handler.response.write(json.dumps({
-                "error": "{}".format(exc.__class__),
+                "status": "error",
                 "message": "{}".format(exc.message)
             }))
     return wrapped
