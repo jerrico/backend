@@ -19,12 +19,12 @@ import webapp2
 from utils import verified_api_request
 
 
-class MainHandler(webapp2.RequestHandler):
+class VerifyAccess(webapp2.RequestHandler):
 
     @verified_api_request
     def get(self):
-        return {"yay": "me"}
+        return {"access": "granted"}
 
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
+    ('/api/v1/verify_access', VerifyAccess)
 ], debug=True)
