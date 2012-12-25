@@ -37,6 +37,10 @@ class VerifyAccess(webapp2.RequestHandler):
     def get(self):
         return {"access": "granted"}
 
+    @verified_api_request
+    def post(self):
+        return {"access": "granted"}
+
 app = webapp2.WSGIApplication([
     ('/api/v1/verify_access', VerifyAccess),
     ('/api/v1/logger', Logger)
