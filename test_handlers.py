@@ -48,15 +48,19 @@ class ApiHandlerMixin(HandlerMixin):
         # we run on live models
         pass
 
-    def get(self, key=None, secret=None, **params):
+    def get(self, key=None, secret=None, status=None,
+                expect_errors=False, **params):
         signed_url = self._sign("GET", "http://localhost" + self.path,
                     params, key, secret)
-        return self.testapp.get(self.path, params=signed_url)
+        return self.testapp.get(self.path, status=status,
+                    expect_errors=expect_errors, params=signed_url)
 
-    def post(self, key=None, secret=None, **params):
+    def post(self, key=None, secret=None, status=None,
+                expect_errors=False, **params):
         signed_url = self._sign("POST", "http://localhost" + self.path,
                     params, key, secret)
-        return self.testapp.post(self.path, params=signed_url)
+        return self.testapp.post(self.path, status=status,
+                    expect_errors=expect_errors, params=signed_url)
 
 
 class VerifyAccessTest(ApiHandlerMixin, ndb_tests.NDBTest):
@@ -75,7 +79,7 @@ class LoggerTest(ApiHandlerMixin, ndb_tests.NDBTest):
     handler_cls = main.Logger
 
     def test_simple(self):
-        self.post(device_id="AMEI", entries=json.dumps([
+        self.post(status=201, device_id="AMEI", entries=json.dumps([
                 {"action": "upload_photo"}]))
         self.assertEquals(LogEntry.query().count(), 1)
         entry = LogEntry.query().get()
@@ -86,7 +90,7 @@ class LoggerTest(ApiHandlerMixin, ndb_tests.NDBTest):
         self.assertEquals(entry.key.parent(), self._default_access)
 
     def test_none_list(self):
-        self.post(device_id="AMEI", entries=json.dumps(
+        self.post(status=201, device_id="AMEI", entries=json.dumps(
                 {"action": "upload_photo"}))
         self.assertEquals(LogEntry.query().count(), 1)
         entry = LogEntry.query().get()
@@ -97,7 +101,7 @@ class LoggerTest(ApiHandlerMixin, ndb_tests.NDBTest):
         self.assertEquals(entry.key.parent(), self._default_access)
 
     def test_with_userd_list(self):
-        self.post(user_id="custom_user_g+0001", entries=json.dumps(
+        self.post(status=201, user_id="custom_user_g+0001", entries=json.dumps(
                 {"action": "start_app"}))
         self.assertEquals(LogEntry.query().count(), 1)
         entry = LogEntry.query().get()
@@ -108,7 +112,7 @@ class LoggerTest(ApiHandlerMixin, ndb_tests.NDBTest):
         self.assertEquals(entry.key.parent(), self._default_access)
 
     def test_multiple(self):
-        self.post(device_id="Meito", entries=json.dumps([
+        self.post(status=201, device_id="Meito", entries=json.dumps([
                 {"action": "upload_photo"},
                 {"action": "upload_photo"}
                 ]))
@@ -120,7 +124,8 @@ class LoggerTest(ApiHandlerMixin, ndb_tests.NDBTest):
             self.assertEquals(entry.key.parent(), self._default_access)
 
     def test_user_and_device(self):
-        self.post(user_id="custom_user_g+0004", device_id="Ameito192",
+        self.post(status=201, user_id="custom_user_g+0004",
+                device_id="Ameito192",
                 entries=json.dumps([{"action": "start_app"}]))
         self.assertEquals(LogEntry.query().count(), 1)
         entry = LogEntry.query().get()
@@ -131,7 +136,10 @@ class LoggerTest(ApiHandlerMixin, ndb_tests.NDBTest):
         self.assertEquals(entry.key.parent(), self._default_access)
 
     def test_no_user_nor_device(self):
-        self.post(entries=json.dumps([{"action": "start_app"}]))
+        # we expect a 400 - user input error
+        req = self.post(status=400,
+            entries=json.dumps([{"action": "start_app"}]))
+        self.assertEquals(req.json["status"], "error")
 
 if __name__ == "__main__":
     unittest.main()

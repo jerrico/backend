@@ -29,6 +29,7 @@ class Logger(webapp2.RequestHandler):
 
         keys = ndb.put_multi([LogEntry.make(app_key, user_id, device_id, **x)
                 for x in entries])
+        self.response.status = 201
         return {"entries": len(keys)}
 
 
