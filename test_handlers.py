@@ -10,7 +10,7 @@ import hmac
 import hashlib
 import json
 
-from google.appengine.ext.ndb import model
+from google.appengine.ext.ndb import model, Key
 from models import LogEntry, AppAccess
 
 
@@ -74,7 +74,50 @@ class VerifyAccessTest(ApiHandlerMixin, ndb_tests.NDBTest):
         self.post(a="b", c="d")
 
 
-class LoggerTest(ApiHandlerMixin, ndb_tests.NDBTest):
+class ReadLoggerTest(ApiHandlerMixin, ndb_tests.NDBTest):
+
+    handler_cls = main.Logger
+
+    def test_empty(self):
+        req = self.get()
+        self.assertEquals(req.json["result"], [])
+
+    def test_simple(self):
+        for x in xrange(10):
+            LogEntry.make(self._default_access, None, None,
+                action="act{}".format(x)).put()
+
+        req = self.get()
+        self.assertEquals(len(req.json["result"]), 10)
+
+    def test_ensure_order(self):
+        for x in xrange(10):
+            LogEntry.make(self._default_access, None, None,
+                action="act_{}".format(x)).put()
+
+        req = self.get()
+        results = req.json["result"]
+        self.assertEquals(len(results), 10)
+        self.assertEquals([x["action"] for x in results],
+            ["act_{}".format(x) for x in xrange(9, -1, -1)])
+
+    def test_only_mine(self):
+        for x in xrange(5):
+            LogEntry.make(self._default_access, None, None,
+                action="act_{}".format(x)).put()
+
+        for x in xrange(5):
+            LogEntry.make(Key(LogEntry, 1), None, None,
+                action="act_{}".format(x)).put()
+
+        req = self.get()
+        results = req.json["result"]
+        self.assertEquals(len(results), 5)
+        self.assertEquals([x["action"] for x in results],
+            ["act_{}".format(x) for x in xrange(4, -1, -1)])
+
+
+class WriteLoggerTest(ApiHandlerMixin, ndb_tests.NDBTest):
 
     handler_cls = main.Logger
 

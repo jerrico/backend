@@ -12,7 +12,9 @@ class Logger(webapp2.RequestHandler):
 
     @verified_api_request
     def get(self):
-        return []
+        query = LogEntry.query(ancestor=self.app_access.key
+                    ).order(-LogEntry.when)
+        return [x.prepare_json() for x in query.fetch(100)]
 
     @verified_api_request
     def post(self):

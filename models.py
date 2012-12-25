@@ -1,6 +1,10 @@
 from google.appengine.ext import ndb
 
 
+def date_json_format(dtm):
+    return dtm.ctime()
+
+
 class AppAccess(ndb.Model):
     name = ndb.StringProperty()
     active = ndb.BooleanProperty(default=True)
@@ -29,6 +33,11 @@ class LogEntry(ndb.Model):
     action = ndb.StringProperty("a", required=True, indexed=True)
     quantity = ndb.IntegerProperty("q", required=False, indexed=False, default=1)
     unit = ndb.StringProperty("un", required=False, indexed=False)
+
+    def prepare_json(self):
+        prepped = self.to_dict()
+        prepped["when"] = date_json_format(prepped["when"])
+        return prepped
 
     @classmethod
     def make(cls, app_key, user_id, device_id, **params):
