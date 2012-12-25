@@ -8,8 +8,10 @@ import urllib
 import binascii
 import hmac
 import hashlib
+import json
 
 from google.appengine.ext.ndb import model
+from models import LogEntry, AppAccess
 
 
 class HandlerMixin(object):
@@ -40,11 +42,11 @@ class ApiHandlerMixin(HandlerMixin):
 
     def setUp(self):
         super(ApiHandlerMixin, self).setUp()
-
-        class AppAccess(model.Model):
-            secret = model.StringProperty(required=True)
-
         self._default_access = AppAccess(secret="meine weihnacht").put()
+
+    def ResetKindMap(self):
+        # we run on live models
+        pass
 
     def get(self, key=None, secret=None, **params):
         signed_url = self._sign("GET", "http://localhost" + self.path,
@@ -61,14 +63,75 @@ class VerifyAccessTest(ApiHandlerMixin, ndb_tests.NDBTest):
 
     handler_cls = main.VerifyAccess
 
-    def setUp(self):
-        super(VerifyAccessTest, self).setUp()
-
     def test_simple(self):
         self.get(a="b", c="d")
 
     def test_post(self):
         self.post(a="b", c="d")
+
+
+class LoggerTest(ApiHandlerMixin, ndb_tests.NDBTest):
+
+    handler_cls = main.Logger
+
+    def test_simple(self):
+        self.post(device_id="AMEI", entries=json.dumps([
+                {"action": "upload_photo"}]))
+        self.assertEquals(LogEntry.query().count(), 1)
+        entry = LogEntry.query().get()
+        self.assertEquals(entry.action, "upload_photo")
+        self.assertEquals(entry.quantity, 1)
+        self.assertEquals(entry.device.string_id(), "AMEI")
+        self.assertTrue(entry.user is None)
+        self.assertEquals(entry.key.parent(), self._default_access)
+
+    def test_none_list(self):
+        self.post(device_id="AMEI", entries=json.dumps(
+                {"action": "upload_photo"}))
+        self.assertEquals(LogEntry.query().count(), 1)
+        entry = LogEntry.query().get()
+        self.assertEquals(entry.action, "upload_photo")
+        self.assertEquals(entry.quantity, 1)
+        self.assertEquals(entry.device.string_id(), "AMEI")
+        self.assertTrue(entry.user is None)
+        self.assertEquals(entry.key.parent(), self._default_access)
+
+    def test_with_userd_list(self):
+        self.post(user_id="custom_user_g+0001", entries=json.dumps(
+                {"action": "start_app"}))
+        self.assertEquals(LogEntry.query().count(), 1)
+        entry = LogEntry.query().get()
+        self.assertEquals(entry.action, "start_app")
+        self.assertEquals(entry.quantity, 1)
+        self.assertEquals(entry.user.string_id(), "custom_user_g+0001")
+        self.assertTrue(entry.device is None)
+        self.assertEquals(entry.key.parent(), self._default_access)
+
+    def test_multiple(self):
+        self.post(device_id="Meito", entries=json.dumps([
+                {"action": "upload_photo"},
+                {"action": "upload_photo"}
+                ]))
+        self.assertEquals(LogEntry.query().count(), 2)
+        for entry in LogEntry.query():
+            self.assertEquals(entry.quantity, 1)
+            self.assertEquals(entry.device.string_id(), "Meito")
+            self.assertTrue(entry.user is None)
+            self.assertEquals(entry.key.parent(), self._default_access)
+
+    def test_user_and_device(self):
+        self.post(user_id="custom_user_g+0004", device_id="Ameito192",
+                entries=json.dumps([{"action": "start_app"}]))
+        self.assertEquals(LogEntry.query().count(), 1)
+        entry = LogEntry.query().get()
+        self.assertEquals(entry.action, "start_app")
+        self.assertEquals(entry.quantity, 1)
+        self.assertEquals(entry.user.string_id(), "custom_user_g+0004")
+        self.assertEquals(entry.device.string_id(), "Ameito192")
+        self.assertEquals(entry.key.parent(), self._default_access)
+
+    def test_no_user_nor_device(self):
+        self.post(entries=json.dumps([{"action": "start_app"}]))
 
 if __name__ == "__main__":
     unittest.main()

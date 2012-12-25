@@ -30,8 +30,8 @@ class LogEntry(ndb.Model):
     quantity = ndb.IntegerProperty("q", required=False, indexed=False, default=1)
     unit = ndb.StringProperty("un", required=False, indexed=False)
 
-    @staticmethod
-    def log(cls, app_key, user_id, device_id, **params):
+    @classmethod
+    def make(cls, app_key, user_id, device_id, **params):
         if user_id:
             params["user"] = ndb.Key(User, user_id, parent=app_key)
         if device_id:

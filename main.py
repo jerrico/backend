@@ -1,23 +1,11 @@
 #!/usr/bin/env python
-#
-# Copyright 2007 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
+
+from utils import verified_api_request
+from google.appengine.ext import ndb
+from models import LogEntry
 
 import webapp2
-from models import LogEntry
-from utils import verified_api_request
+import json
 
 
 class Logger(webapp2.RequestHandler):
@@ -28,7 +16,20 @@ class Logger(webapp2.RequestHandler):
 
     @verified_api_request
     def post(self):
-        pass
+        device_id = self.request.POST.get("device_id")
+        user_id = self.request.POST.get("user_id")
+        if not device_id and not user_id:
+            webapp2.abort(400, "either device_id or user_id must be provided")
+
+        entries = json.loads(self.request.POST.get("entries"))
+        app_key = self.app_access.key
+
+        if isinstance(entries, dict):
+            entries = [entries]
+
+        keys = ndb.put_multi([LogEntry.make(app_key, user_id, device_id, **x)
+                for x in entries])
+        return {"entries": len(keys)}
 
 
 class VerifyAccess(webapp2.RequestHandler):
