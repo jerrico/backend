@@ -16,7 +16,19 @@
 #
 
 import webapp2
+from models import LogEntry
 from utils import verified_api_request
+
+
+class Logger(webapp2.RequestHandler):
+
+    @verified_api_request
+    def get(self):
+        return []
+
+    @verified_api_request
+    def post(self):
+        pass
 
 
 class VerifyAccess(webapp2.RequestHandler):
@@ -26,5 +38,6 @@ class VerifyAccess(webapp2.RequestHandler):
         return {"access": "granted"}
 
 app = webapp2.WSGIApplication([
-    ('/api/v1/verify_access', VerifyAccess)
+    ('/api/v1/verify_access', VerifyAccess),
+    ('/api/v1/logger', Logger)
 ], debug=True)
