@@ -40,8 +40,9 @@ class TestVerifier(ndb_tests.NDBTest):
                         "_signature": "faulty"})
 
     def test_faulty_signature(self):
-        self.assertFalse(verify_request("GET", "http://example.com",
-                {"_key": self.eins_zwo.urlsafe(), "_signature": "faulty"}))
+        self.assertRaises(webapp2.HTTPException, verify_request,
+            "GET", "http://example.com",
+            {"_key": self.eins_zwo.urlsafe(), "_signature": "faulty"})
 
     def test_simple(self):
         key = self.eins_zwo.urlsafe()
@@ -52,8 +53,8 @@ class TestVerifier(ndb_tests.NDBTest):
         params["_signature"] = binascii.b2a_base64(
             hmac.new(secret, query, hashlib.sha256).digest())
 
-        self.assertTrue(verify_request("GET", "http://www.example.com",
-                params))
+        self.assertEquals(self.eins_zwo.get(), verify_request("GET",
+                    "http://www.example.com", params))
 
     def test_lists(self):
         key = self.eins_zwo.urlsafe()
@@ -65,8 +66,8 @@ class TestVerifier(ndb_tests.NDBTest):
         params["_signature"] = binascii.b2a_base64(
             hmac.new(secret, query, hashlib.sha256).digest())
 
-        self.assertTrue(verify_request("GET", "http://www.example.com",
-                params))
+        self.assertEquals(self.eins_zwo.get(), verify_request("GET",
+                    "http://www.example.com", params))
 
     def test_unsorted_params(self):
         key = self.eins_zwo.urlsafe()
@@ -80,8 +81,8 @@ class TestVerifier(ndb_tests.NDBTest):
         params["_signature"] = binascii.b2a_base64(
             hmac.new(secret, query, hashlib.sha256).digest())
 
-        self.assertTrue(verify_request("GET", "http://www.example.com",
-                params))
+        self.assertEquals(self.eins_zwo.get(), verify_request("GET",
+                    "http://www.example.com", params))
 
     def test_post(self):
         key = self.other_key.urlsafe()
@@ -92,8 +93,8 @@ class TestVerifier(ndb_tests.NDBTest):
         params["_signature"] = binascii.b2a_base64(
             hmac.new(secret, query, hashlib.sha256).digest())
 
-        self.assertTrue(verify_request("POST", "http://www.example.com",
-                    params))
+        self.assertEquals(self.other_key.get(), verify_request("POST",
+                    "http://www.example.com", params))
 
     def test_changed_params(self):
         key = self.eins_zwo.urlsafe()
@@ -107,8 +108,8 @@ class TestVerifier(ndb_tests.NDBTest):
         # let's play with the params
         params["yay"] = "oupsi"
 
-        self.assertFalse(verify_request("GET", "http://www.example.com",
-                params))
+        self.assertRaises(webapp2.HTTPException,
+                verify_request, "GET", "http://www.example.com", params)
 
 
 if __name__ == "__main__":

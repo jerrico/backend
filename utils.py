@@ -19,7 +19,8 @@ def verify_request(method, url, params):
         webapp2.abort(400, "_key and _signature must be provided")
 
     try:
-        app_secret = Key(urlsafe=app_key).get().secret
+        app_access = Key(urlsafe=app_key).get()
+        app_secret = app_access.secret
     except Exception:
         webapp2.abort(401, "Unknown key: {}".format(app_key))
 
@@ -29,7 +30,10 @@ def verify_request(method, url, params):
             "&".join((method.upper(), url, params)), hashlib.sha256)
     my_signature = binascii.b2a_base64(hashed.digest())
 
-    return my_signature == signature
+    if my_signature != signature:
+        webapp2.abort(403)
+
+    return app_access
 
 
 def as_json(fun):
@@ -57,10 +61,8 @@ def as_json(fun):
 
 def verified_api_request(func):
     def wrapped(handler, *args, **kwargs):
-        if not verify_request(handler.request.method,
+        handler.app_access = verify_request(handler.request.method,
                     handler.request.path_url,
-                    handler.request.params):
-            webapp2.abort(403)
-
+                    handler.request.params)
         return func(handler, *args, **kwargs)
     return as_json(wrapped)
