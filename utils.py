@@ -31,7 +31,7 @@ def verify_request(method, url, params):
     my_signature = binascii.b2a_base64(hashed.digest())
 
     if my_signature != signature:
-        webapp2.abort(403)
+        webapp2.abort(403, "invalid signature")
 
     return app_access
 
