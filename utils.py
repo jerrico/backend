@@ -24,10 +24,10 @@ def verify_request(method, url, params):
     except Exception:
         webapp2.abort(401, "Unknown key: {}".format(app_key))
 
-    params = urllib.urlencode(params)
+    enc_params = urllib.urlencode(params)
 
     hashed = hmac.new(app_secret.encode("utf-8"),
-            "&".join((method.upper(), url, params)), hashlib.sha256)
+            "&".join((method.upper(), url, enc_params)), hashlib.sha256)
     my_signature = binascii.b2a_base64(hashed.digest())
 
     if my_signature != signature:
@@ -61,8 +61,9 @@ def as_json(fun):
 
 def verified_api_request(func):
     def wrapped(handler, *args, **kwargs):
+        params = handler.request.method == "POST" and \
+                handler.request.POST or handler.request.GET
         handler.app_access = verify_request(handler.request.method,
-                    handler.request.path_url,
-                    handler.request.params)
+                    handler.request.path_url, params)
         return func(handler, *args, **kwargs)
     return as_json(wrapped)
