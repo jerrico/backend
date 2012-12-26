@@ -145,6 +145,26 @@ class SimpleProfilerTest(ndb_tests.NDBTest):
         self.assertEquals(profile_state["states"]["share_photo"][1]["left"], 16)
         self.assertEquals(profile_state["states"]["share_photo"][1]["max"], 20)
 
+
+    def test_with_endless_counter(self):
+        self._load_simple()
+        LogEntry.make(self.app_access.key, "prem", None,
+                    action="quota").put()
+
+        for x in xrange(50):
+            LogEntry.make(self.app_access.key, "prem", None,
+                    action="quota",
+                    when=(datetime.now() - timedelta(days=x**2))).put()
+
+        profile_state = self.app_access.compile_profile_state(
+                user_id="prem")
+        self.assertEquals(profile_state["profile"], "premium")
+        self.assertEquals(profile_state["default"], "allow")
+        self.assertEquals(len(profile_state["states"]), 2)
+        self.assertEquals(profile_state["states"]["quota"][0]["left"], 949)
+        self.assertEquals(profile_state["states"]["quota"][0]["max"], 1000)
+
+
     def test_no_user_nor_device(self):
         self._load_simple()
         self.assertRaises(AssertionError,
