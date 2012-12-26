@@ -1,4 +1,5 @@
 from google.appengine.ext import ndb
+from datetime import datetime, timedelta
 
 
 def date_json_format(dtm):
@@ -15,12 +16,16 @@ class AppAccess(ndb.Model):
     def compile_profile_state(self, user_id=None, device_id=None):
         assert user_id or device_id, "user_id or device_id need to be specified"
         profile_key = None
+        user_key = None
+        device_key = None
         if user_id:
-            user = ndb.Key(User, user_id, parent=self.key).get()
+            user_key = ndb.Key(User, user_id, parent=self.key)
+            user = user_key.get()
             if user:
                 profile_key = user.assigned_profile
         if not profile_key and device_id:
-            device = ndb.Key(Device, device_id, parent=self.key).get()
+            device_key = ndb.Key(Device, device_id, parent=self.key)
+            device = device_key.get()
             if device:
                 profile_key = device.assigned_profile
         if not profile_key:
@@ -38,15 +43,30 @@ class AppAccess(ndb.Model):
         else:
             profile = profile_key.get()
 
+        query = LogEntry.query()
+        if user_key:
+            query = query.filter(LogEntry.user == user_key)
+        elif device_key:
+            query = query.filter(LogEntry.device == device_key)
+
         states = {}
         for res in profile.restrictions:
-            dictified = {"max": res.limit_to,
-                    "left": res.limit_to,
-                    "during": res.duration}
+            if res.limit_to is not None:
+                limitation = {}
+                limitation["max"] = res.limit_to
+                if res.duration is not None:
+                    limitation["during"] = duration = res.duration
+                    if duration == "a day":
+                        query = query.filter(LogEntry.when > \
+                                    datetime.now() - timedelta(hours=24))
+
+                limitation["left"] = res.limit_to - query.count()
+            else:
+                limitation = True
             try:
-                states[res.action].append(dictified)
+                states[res.action].append(limitation)
             except KeyError:
-                states[res.action] = [dictified]
+                states[res.action] = [limitation]
 
         return {
             "profile": profile.name,
