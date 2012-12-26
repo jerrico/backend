@@ -51,7 +51,7 @@ class AppAccess(ndb.Model):
 
         states = {}
         for res in profile.restrictions:
-            my_query = query
+            my_query = query.filter(LogEntry.action == res.action)
             if res.limit_to is not None:
                 limitation = {}
                 limitation["max"] = res.limit_to

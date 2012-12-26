@@ -73,6 +73,17 @@ class SimpleProfilerTest(ndb_tests.NDBTest):
         self.assertEquals(profile_state["states"]["upload_photo"][0]["left"], 8)
         self.assertEquals(profile_state["states"]["upload_photo"][0]["max"], 10)
 
+        # other action
+        LogEntry.make(self.app_access.key, "free_u", None,
+                    action="share_photo").put()
+
+        profile_state = self.app_access.compile_profile_state(user_id="free_u")
+        self.assertEquals(profile_state["profile"], "free")
+        self.assertEquals(profile_state["default"], "deny")
+        self.assertEquals(len(profile_state["states"]), 3)
+        self.assertEquals(profile_state["states"]["upload_photo"][0]["left"], 8)
+        self.assertEquals(profile_state["states"]["upload_photo"][0]["max"], 10)
+
     def test_with_outer_user_counter(self):
         self._load_simple()
         LogEntry.make(self.app_access.key, "free_u", None,
