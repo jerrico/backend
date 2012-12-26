@@ -27,7 +27,9 @@ class SimpleProfilerTest(ndb_tests.NDBTest):
             restrictions=[
                 # simple:
                 Restriction(action="upload_photo",
-                            limit_to=100, duration="a day")
+                            limit_to=100, duration="a day"),
+                # endless restriction:
+                Restriction(action="quota", limit_to=1000),
             ]).put()
         User(id="free_u", parent=app, assigned_profile=free).put()
         User(id="prem", parent=app, assigned_profile=premium).put()
@@ -143,9 +145,6 @@ class SimpleProfilerTest(ndb_tests.NDBTest):
         self.assertEquals(profile_state["states"]["share_photo"][1]["left"], 16)
         self.assertEquals(profile_state["states"]["share_photo"][1]["max"], 20)
 
-
-
-
     def test_no_user_nor_device(self):
         self._load_simple()
         self.assertRaises(AssertionError,
@@ -165,7 +164,7 @@ class SimpleProfilerTest(ndb_tests.NDBTest):
                 user_id="faulty_id", device_id="MIAU_PREM")
         self.assertEquals(profile_state["profile"], "premium")
         self.assertEquals(profile_state["default"], "allow")
-        self.assertEquals(len(profile_state["states"]), 1)
+        self.assertEquals(len(profile_state["states"]), 2)
 
 
 
