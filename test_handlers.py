@@ -10,23 +10,22 @@ import hmac
 import hashlib
 import json
 
-from google.appengine.ext.ndb import model, Key
+from google.appengine.ext.ndb import Key
 from models import LogEntry, AppAccess
 
 
-class HandlerMixin(object):
+class ApiHandlerMixin(object):
+
     handler_cls = None
     path = "/"
 
     def setUp(self):
-        super(HandlerMixin, self).setUp()
+        super(ApiHandlerMixin, self).setUp()
         # Create a WSGI application.
         app = webapp2.WSGIApplication([(self.path, self.handler_cls)])
         # Wrap the app with WebTest’s TestApp.
         self.testapp = webtest.TestApp(app)
-
-
-class ApiHandlerMixin(HandlerMixin):
+        self._default_access = AppAccess(secret="meine weihnacht").put()
 
     def _sign(self, method, url, params, key=None, secret=None):
         if not key:
@@ -39,10 +38,6 @@ class ApiHandlerMixin(HandlerMixin):
         encoded += "&_signature=" + urllib.quote(binascii.b2a_base64(
                 hmac.new(secret, query, hashlib.sha256).digest()))
         return encoded
-
-    def setUp(self):
-        super(ApiHandlerMixin, self).setUp()
-        self._default_access = AppAccess(secret="meine weihnacht").put()
 
     def ResetKindMap(self):
         # we run on live models
