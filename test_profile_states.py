@@ -48,61 +48,90 @@ class SimpleProfilerTest(ndb_tests.NDBTest):
         self.assertEquals(profile_state["default"], "deny")
         self.assertEquals(len(profile_state["states"]), 3)
         self.assertEquals(profile_state["states"]["take_photo"], [True])
-        self.assertEquals(profile_state["states"]["share_photo"][0]["left"], 10)
-        self.assertEquals(profile_state["states"]["share_photo"][0]["max"], 10)
+        self.assertEquals(profile_state["states"]["upload_photo"][0]["left"], 10)
+        self.assertEquals(profile_state["states"]["upload_photo"][0]["max"], 10)
 
     def test_with_simple_counter(self):
         self._load_simple()
         LogEntry.make(self.app_access.key, "free_u", None,
-                    action="share_photo").put()
+                    action="upload_photo").put()
 
         profile_state = self.app_access.compile_profile_state(user_id="free_u")
         self.assertEquals(profile_state["profile"], "free")
         self.assertEquals(profile_state["default"], "deny")
         self.assertEquals(len(profile_state["states"]), 3)
-        self.assertEquals(profile_state["states"]["share_photo"][0]["left"], 9)
-        self.assertEquals(profile_state["states"]["share_photo"][0]["max"], 10)
+        self.assertEquals(profile_state["states"]["upload_photo"][0]["left"], 9)
+        self.assertEquals(profile_state["states"]["upload_photo"][0]["max"], 10)
 
         LogEntry.make(self.app_access.key, "free_u", None,
-                    action="share_photo").put()
+                    action="upload_photo").put()
 
         profile_state = self.app_access.compile_profile_state(user_id="free_u")
         self.assertEquals(profile_state["profile"], "free")
         self.assertEquals(profile_state["default"], "deny")
         self.assertEquals(len(profile_state["states"]), 3)
-        self.assertEquals(profile_state["states"]["share_photo"][0]["left"], 8)
-        self.assertEquals(profile_state["states"]["share_photo"][0]["max"], 10)
+        self.assertEquals(profile_state["states"]["upload_photo"][0]["left"], 8)
+        self.assertEquals(profile_state["states"]["upload_photo"][0]["max"], 10)
 
     def test_with_outer_user_counter(self):
         self._load_simple()
         LogEntry.make(self.app_access.key, "free_u", None,
-                    action="share_photo").put()
+                    action="upload_photo").put()
         # none user
         LogEntry.make(self.app_access.key, "other", None,
-                    action="share_photo").put()
+                    action="upload_photo").put()
 
         profile_state = self.app_access.compile_profile_state(user_id="free_u")
         self.assertEquals(profile_state["profile"], "free")
         self.assertEquals(profile_state["default"], "deny")
         self.assertEquals(len(profile_state["states"]), 3)
-        self.assertEquals(profile_state["states"]["share_photo"][0]["left"], 9)
-        self.assertEquals(profile_state["states"]["share_photo"][0]["max"], 10)
+        self.assertEquals(profile_state["states"]["upload_photo"][0]["left"], 9)
+        self.assertEquals(profile_state["states"]["upload_photo"][0]["max"], 10)
 
     def test_with_yesterday_counter(self):
         self._load_simple()
         LogEntry.make(self.app_access.key, "free_u", None,
-                    action="share_photo").put()
-        # none user
+                    action="upload_photo").put()
+        # yesterday
         LogEntry.make(self.app_access.key, "free_u", None,
-                    action="share_photo",
+                    action="upload_photo",
                     when=datetime.now() - timedelta(hours=25)).put()
 
         profile_state = self.app_access.compile_profile_state(user_id="free_u")
         self.assertEquals(profile_state["profile"], "free")
         self.assertEquals(profile_state["default"], "deny")
         self.assertEquals(len(profile_state["states"]), 3)
+        self.assertEquals(profile_state["states"]["upload_photo"][0]["left"], 9)
+        self.assertEquals(profile_state["states"]["upload_photo"][0]["max"], 10)
+
+    def test_with_week_counter(self):
+        self._load_simple()
+        LogEntry.make(self.app_access.key, "free_u", None,
+                    action="share_photo").put()
+        LogEntry.make(self.app_access.key, "free_u", None,
+                    action="share_photo",
+                    when=(datetime.now() - timedelta(hours=25))).put()
+        LogEntry.make(self.app_access.key, "free_u", None,
+                    action="share_photo",
+                    when=(datetime.now() - timedelta(days=3))).put()
+        LogEntry.make(self.app_access.key, "free_u", None,
+                    action="share_photo",
+                    when=(datetime.now() - timedelta(days=6))).put()
+        # outside
+        LogEntry.make(self.app_access.key, "free_u", None,
+                    action="share_photo",
+                    when=(datetime.now() - timedelta(days=10))).put()
+
+        profile_state = self.app_access.compile_profile_state(
+                user_id="free_u")
+        self.assertEquals(profile_state["profile"], "free")
+        self.assertEquals(profile_state["default"], "deny")
+        self.assertEquals(len(profile_state["states"]), 3)
         self.assertEquals(profile_state["states"]["share_photo"][0]["left"], 9)
         self.assertEquals(profile_state["states"]["share_photo"][0]["max"], 10)
+        self.assertEquals(profile_state["states"]["share_photo"][1]["left"], 16)
+        self.assertEquals(profile_state["states"]["share_photo"][1]["max"], 20)
+
 
 
 

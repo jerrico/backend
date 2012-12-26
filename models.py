@@ -51,16 +51,20 @@ class AppAccess(ndb.Model):
 
         states = {}
         for res in profile.restrictions:
+            my_query = query
             if res.limit_to is not None:
                 limitation = {}
                 limitation["max"] = res.limit_to
                 if res.duration is not None:
                     limitation["during"] = duration = res.duration
                     if duration == "a day":
-                        query = query.filter(LogEntry.when > \
-                                    datetime.now() - timedelta(hours=24))
+                        delta = timedelta(days=1)
+                    elif duration == "a week":
+                        delta = timedelta(days=7)
 
-                limitation["left"] = res.limit_to - query.count()
+                    my_query = my_query.filter(LogEntry.when > \
+                                    (datetime.now() - delta))
+                limitation["left"] = res.limit_to - my_query.count()
             else:
                 limitation = True
             try:
