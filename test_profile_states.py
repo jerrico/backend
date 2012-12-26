@@ -40,6 +40,8 @@ class ProfilerTest(ndb_tests.NDBTest):
         self._load_simple()
         profile_state = self.app_access.compile_profile_state(user_id="free_u")
         self.assertEquals(profile_state["profile"], "free")
+        self.assertEquals(profile_state["default"], "deny")
+        self.assertEquals(len(profile_state["states"]), 3)
 
     def test_no_user_nor_device(self):
         self._load_simple()
@@ -51,12 +53,16 @@ class ProfilerTest(ndb_tests.NDBTest):
         profile_state = self.app_access.compile_profile_state(
                 user_id="free_u", device_id="MIAU_PREM")
         self.assertEquals(profile_state["profile"], "free")
+        self.assertEquals(profile_state["default"], "deny")
+        self.assertEquals(len(profile_state["states"]), 3)
 
     def test_device_fallback(self):
         self._load_simple()
         profile_state = self.app_access.compile_profile_state(
                 user_id="faulty_id", device_id="MIAU_PREM")
         self.assertEquals(profile_state["profile"], "premium")
+        self.assertEquals(profile_state["default"], "allow")
+        self.assertEquals(len(profile_state["states"]), 1)
 
     def ResetKindMap(self):
         # we run on live models

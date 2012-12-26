@@ -38,9 +38,21 @@ class AppAccess(ndb.Model):
         else:
             profile = profile_key.get()
 
-        return {"profile": profile.name}
+        states = {}
+        for res in profile.restrictions:
+            dictified = {"max": res.limit_to,
+                    "left": res.limit_to,
+                    "during": res.duration}
+            try:
+                states[res.action].append(dictified)
+            except KeyError:
+                states[res.action] = [dictified]
 
-
+        return {
+            "profile": profile.name,
+            "default": profile.allow_per_default and "allow" or "deny",
+            "states": states
+            }
 
 
 class Restriction(ndb.Model):
