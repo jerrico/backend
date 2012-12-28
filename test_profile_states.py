@@ -154,7 +154,7 @@ class SimpleProfilerTest(ndb_tests.NDBTest):
         for x in xrange(50):
             LogEntry.make(self.app_access.key, "prem", None,
                     action="quota",
-                    when=(datetime.now() - timedelta(days=x**2))).put()
+                    when=(datetime.now() - timedelta(days=x ** 2))).put()
 
         profile_state = self.app_access.compile_profile_state(
                 user_id="prem")
