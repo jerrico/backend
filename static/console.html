@@ -18,7 +18,7 @@
     </head>
     <body>
 
-      <div class="modal fade hide" id="addAppModal" ng-controller="AddAppCtrl">
+      <div class="modal fade hide" tw-modal="true" id="addAppModal" ng-controller="AddAppCtrl">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">x</button>
           <h3>Create new App</h3>
@@ -41,11 +41,11 @@
             <ul class="nav" id="main-nav">              
               <li>
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                  {{selected_app.name}}
+                  {{appState.selected_app.name}}
                   <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
-                  <li ng-repeat="app in apps"><a ng-click="selectApp(app)">{{app.name}}</a></li>
+                  <li ng-repeat="app in appState.apps"><a ng-click="appState.selectApp(app)">{{app.name}}</a></li>
                   <li class="divider"></li>
                   <li><a data-toggle="modal" href="#addAppModal" ><i class="icon-plus"></i> Add App</a></li>
                 </ul>
@@ -67,7 +67,7 @@
           </div>
         </div>
 
-        <div class="container" ng-controller="MainCtrl">
+        <div class="container">
             <div id="main">
                 <div class="row" ng-repeat="log in logEntries">
                     {{log.action}}
