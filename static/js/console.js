@@ -27,6 +27,13 @@ consoleApp.controller("NavbarCtrl", function($scope, Apps) {
     console.log(app);
   };
 }).
-controller ("MainCtrl", function ($scope, Apps) {
+controller ("AddAppCtrl", function ($scope, Apps) {
+
+  $scope.model = {};
+
+  $scope.saveApp = function() {
+    console.log($scope.model.app_name);
+
+  };
   
 });

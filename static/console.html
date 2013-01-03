@@ -17,26 +17,46 @@
         <script src="/static/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
     </head>
     <body>
-        <div id="navbar" ng-controller="NavbarCtrl" class="navbar">
-          <div class="navbar-inner">
-            <div class="container">
-              <ul class="nav" id="main-nav">              
-                <li>
-                  <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                    {{selected_app.name}}
-                    <span class="caret"></span>
-                  </a>
-                  <ul class="dropdown-menu">
-                    <li ng-repeat="app in apps"><a ng-click="selectApp(app)">{{app.name}}</a></li>
-                  </ul>
-                </li>
-                <li id="home-menu" class="active"><a href="#/dashboard">Dashboard</a></li>
-                <li id="books-menu"><a href="#stats">Stats</a></li>
-                <li id="videos-menu"><a href="#logs">Logs</a></li>
-              </ul>
-            </div>
+
+      <div class="modal fade hide" id="addAppModal" ng-controller="AddAppCtrl">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">x</button>
+          <h3>Create new App</h3>
+        </div>
+        <form method="post" action='' name="login_form" ng-submit="saveApp(user)" >
+          <div class="modal-body">
+
+            <p><input type="text" required="required" class="span3" ng-model="model.app_name" placeholder="Name your App"></p>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Add App</button>
+          </div>
+        </form>
+      </div>
+
+
+      <div id="navbar" ng-controller="NavbarCtrl" class="navbar">
+        <div class="navbar-inner">
+          <div class="container">
+            <ul class="nav" id="main-nav">              
+              <li>
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                  {{selected_app.name}}
+                  <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                  <li ng-repeat="app in apps"><a ng-click="selectApp(app)">{{app.name}}</a></li>
+                  <li class="divider"></li>
+                  <li><a data-toggle="modal" href="#addAppModal" ><i class="icon-plus"></i> Add App</a></li>
+                </ul>
+              </li>
+              <li id="home-menu" class="active"><a href="#/dashboard">Dashboard</a></li>
+              <li id="books-menu"><a href="#stats">Stats</a></li>
+              <li id="videos-menu"><a href="#logs">Logs</a></li>
+            </ul>
           </div>
         </div>
+      </div>
 
         <div id="generalModal" class="modal hide fade" tabindex="-1" role="dialog">
           <div class="modal-header">
