@@ -9,6 +9,15 @@ import json
 import urllib
 
 
+def understand_post(func):
+    def wrapped(self, *args, **kwargs):
+        params = self.request.POST
+        if not params:
+            params = json.loads(self.request.body)
+        return func(self, params, *args, **kwargs)
+    return wrapped
+
+
 def verify_request(method, url, params):
     app_key = params.get("_key")
     if not app_key:
