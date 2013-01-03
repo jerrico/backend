@@ -1,6 +1,6 @@
 var consoleServices = angular.module('consoleServices', ['ngResource']).
-  return $resource('/api/v0/my_apps', {}, {
     factory('App', function($resource){
+      return $resource('/api/v0/my_apps', {}, {
     query: {method:'GET', params: {"_raw": 1}, isArray:true}
   });
 });
