@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from utils import verified_api_request, as_json
+from utils import verified_api_request, as_json, understand_post
 from google.appengine.ext import ndb
 from models import LogEntry, AppAccess
 
@@ -53,6 +53,18 @@ class AppsManager(webapp2.RequestHandler):
     @as_json
     def get(self):
         return [x.prepare_json() for x in AppAccess.query()]
+
+    @verify_user
+    @as_json
+    @understand_post
+    def post(self, params):
+        name = params.get("name", None)
+        if not name:
+            raise ValueError(self.request.POST)
+            webapp2.abort(400, "No app name given")
+        app = AppAccess.create(name)
+        app.put()
+        return app.prepare_json()
 
 
 class VerifyAccess(webapp2.RequestHandler):
