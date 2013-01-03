@@ -13,6 +13,12 @@ class AppAccess(ndb.Model):
     secret = ndb.StringProperty(required=True, indexed=False)
     domain = ndb.StringProperty(indexed=False)
 
+    def prepare_json(self):
+        prepped = self.to_dict()
+        prepped["key"] = self.key.urlsafe()
+        prepped["created"] = date_json_format(prepped["created"])
+        return prepped
+
     def compile_profile_state(self, user_id=None, device_id=None):
         assert user_id or device_id, "user_id or device_id need to be specified"
         profile_key = None
