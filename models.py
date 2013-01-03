@@ -1,5 +1,6 @@
 from google.appengine.ext import ndb
 from datetime import datetime, timedelta
+from uuid import uuid4
 
 
 def date_json_format(dtm):
@@ -12,6 +13,10 @@ class AppAccess(ndb.Model):
     created = ndb.DateTimeProperty(auto_now_add=True)
     secret = ndb.StringProperty(required=True, indexed=False)
     domain = ndb.StringProperty(indexed=False)
+
+    @classmethod
+    def create(cls, app_name):
+        return cls(name=app_name, active=True, secret=uuid4().get_hex())
 
     def prepare_json(self):
         prepped = self.to_dict()
