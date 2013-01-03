@@ -47,7 +47,7 @@ class Logger(webapp2.RequestHandler):
         return {"entries": len(keys)}
 
 
-class GetApps(webapp2.RequestHandler):
+class AppsManager(webapp2.RequestHandler):
 
     @verify_user
     @as_json
@@ -68,5 +68,5 @@ class VerifyAccess(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/api/v1/verify_access', VerifyAccess),
     ('/api/v1/logger', Logger),
-    ('/api/v0/my_apps', GetApps)
+    ('/api/v0/my_apps', AppsManager)
 ], debug=True)
