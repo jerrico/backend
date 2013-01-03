@@ -39,11 +39,12 @@ def verify_request(method, url, params):
 def as_json(fun):
     def wrapped(handler, *args, **kwargs):
         handler.response.content_type = "application/json"
+        wrap_it = not handler.request.params.get("_raw")
         try:
-            handler.response.write(json.dumps({
-                    "status": "success",
-                    "result": fun(handler, *args, **kwargs)
-                    }))
+            res = fun(handler, *args, **kwargs)
+            if wrap_it:
+                res = {"status": "success", "result": res}
+            handler.response.write(json.dumps(res))
         except webapp2.HTTPException, exc:
             handler.response.status = exc.code
             handler.response.write(json.dumps({
