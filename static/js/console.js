@@ -32,8 +32,9 @@ controller ("AddAppCtrl", function ($scope, App) {
   $scope.model = {};
 
   $scope.saveApp = function() {
-    console.log($scope.model.app_name);
-
+    var newApp = new App({name: $scope.model.app_name});
+    newApp.$save();
+    console.log(newApp);
   };
   
 });
