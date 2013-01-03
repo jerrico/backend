@@ -1,6 +1,6 @@
 var consoleServices = angular.module('consoleServices', ['ngResource']).
-    factory('Apps', function($resource){
   return $resource('/api/v0/my_apps', {}, {
+    factory('App', function($resource){
     query: {method:'GET', params: {"_raw": 1}, isArray:true}
   });
 });
@@ -16,9 +16,9 @@ var consoleApp = angular.module('console', ["consoleServices"]).
   });
 consoleApp.value("appName", "consoleApp");
 
-consoleApp.controller("NavbarCtrl", function($scope, Apps) {
+consoleApp.controller("NavbarCtrl", function($scope, App) {
   console.log($scope);
-  $scope.apps = Apps.query(function() {
+  $scope.apps = App.query(function() {
     // preselect first
     $scope.selectApp($scope.apps[0]);
   });
@@ -27,7 +27,7 @@ consoleApp.controller("NavbarCtrl", function($scope, Apps) {
     console.log(app);
   };
 }).
-controller ("AddAppCtrl", function ($scope, Apps) {
+controller ("AddAppCtrl", function ($scope, App) {
 
   $scope.model = {};
 
