@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" ng-app="console"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" ng-app="console"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" ng-app="console"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" ng-app="console"> <!--<![endif]-->
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -17,58 +17,23 @@
         <script src="/static/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
     </head>
     <body>
-
-        <script type="text/template" id="tmpl-main">
-            <div class="hero-unit">
-                <h1>Welcome!</h1>
-                <p>Startin Text</p>
-                <p>Let`s get things done</p>
-                <p><a class="btn btn-primary btn-large">Learn more &raquo;</a></p>
-            </div>
-
-            <div class="row">
-                <div class="span4">
-                    <h2>Books</h2>
-                    <p>There are plenty of programming and hacking books out there. Not all are good and it sometimes gets overwhelming. Here you can find those books that helped us learn and we recommend reading.</p>
-                    <p><a class="btn" href="#books/">Recommended Books &raquo;</a></p>
-                </div>
-                <div class="span4">
-                    <h2>Videos</h2>
-                    <p>Plenty of talks on tech topic help us learn every. And while there are a bunch which surface up through to us via social media and our channels not all are known to every. So we want to recommend some.</p>
-                    <p><a class="btn" href="#video/">Recommended Videos &raquo;</a></p>
-                </div>
-                <div class="span4">
-                    <h2>Online Courses</h2>
-                    <p>More and more online courses poping up it becomes hard to choose. Those are the online courses that helped us and we`d recommend</p>
-                    <p><a class="btn" href="#courses/">Recommended Courses &raquo;</a></p>
-               </div>
-            </div>
-        </script>
-
-        
-        <!--[if lt IE 7]>
-            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
-        <![endif]-->
-
-        <!-- This code is taken from http://twitter.github.com/bootstrap/examples/hero.html -->
-
-        <div id="navbar" class="navbar">
+        <div id="navbar" ng-controller="NavbarCtrl" class="navbar">
           <div class="navbar-inner">
             <div class="container">
-              <a class="brand" href="#">recommendly</a>
-              <ul class="nav" id="main-nav">
-                  <li id="home-menu" class="active"><a href="#/">Home</a></li>
-                  <li id="books-menu"><a href="#books/">Books</a></li>
-                  <li id="videos-menu"><a href="#videos/">Videos</a></li>
-                  <li id="courses-menu"><a href="#courses/">Courses</a></li>
+              <ul class="nav" id="main-nav">              
+                <li>
+                  <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                    {{selected_app.name}}
+                    <span class="caret"></span>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li ng-repeat="app in apps"><a ng-click="selectApp(app)">{{app.name}}</a></li>
+                  </ul>
+                </li>
+                <li id="home-menu" class="active"><a href="#/dashboard">Dashboard</a></li>
+                <li id="books-menu"><a href="#stats">Stats</a></li>
+                <li id="videos-menu"><a href="#logs">Logs</a></li>
               </ul>
-              <div id="search-form" class="offset7">
-                <form class="navbar-search">
-                    <input type="text" class="search-query" name="search" placeholder="Search">
-                </form>
-              </div>
-              <ul class="nav pull-right" id="login-bar">
-                </ul>
             </div>
           </div>
         </div>
@@ -82,14 +47,12 @@
           </div>
         </div>
 
-        <div class="container">
+        <div class="container" ng-controller="MainCtrl">
             <div id="main">
-
-                <div style="position: absolute; left: 35%; top:35%; width: 30%" class="progress progress-striped progress-danger active">
-                    <div class="bar" id="progress-bar" style="width: 10%;"></div>
+                <div class="row" ng-repeat="log in logEntries">
+                    {{log.action}}
                 </div>
             </div>
-
 
             <hr>
 
@@ -101,11 +64,15 @@
         <script src="/static/js/vendor/jquery-1.8.3.min.js"></script>
 
         <script src="/static/js/vendor/bootstrap.min.js"></script>
+        <!--
         <script src="/static/js/vendor/underscore-min.js"></script>
         <script src="/static/js/vendor/json2.js"></script>
         <script src="/static/js/vendor/backbone-min.js"></script>
         <script src="/static/js/vendor/base64.js"></script>
-        <script src="/static/js/main.js"></script>
+        -->
+        <script src="/static/js/vendor/angular.min.js"></script>
+        <script src="/static/js/vendor/angular-resource.min.js"></script>
+        <script src="/static/js/console.js"></script>
 
         <script>
             var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
