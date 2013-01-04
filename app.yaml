@@ -18,9 +18,9 @@ handlers:
   static_files: static/console.html
   upload: static/console.html
 
-- url: /static/(.*\.(gif|png|jpg|js|css|less|ico|woff|tff|svg|eot))
+- url: /static/(.*\.(gif|png|jpg|js|css|less|ico|woff|tff|svg|eot|tmpl))
   static_files: static/\1
-  upload: static/(.*\.(gif|png|jpg|js|css|less|ico|woff|tff|svg|eot))
+  upload: static/(.*\.(gif|png|jpg|js|css|less|ico|woff|tff|svg|eot|tmpl))
 
 - url: .*
   script: main.app

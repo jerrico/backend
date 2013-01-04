@@ -30,6 +30,23 @@ angular.module('console.services', ['ngResource']).
       self.apps.push(app);
     };
 
+    self.findApp = function(appId) {
+      var app;
+      $.each(self.apps, function(idx, item) {
+        if (item.key == appId) {
+          app = item;
+          return false;
+        }
+      });
+      return app;
+    };
+
+    self.findAndSelectApp = function(appId) {
+      var app = self.findApp(appId);
+      self.selectApp(app);
+      return app;
+    };
+
     self.apps = App.query(function() {
       // preselect first
       self.selectApp(self.apps[0]);
@@ -39,20 +56,27 @@ angular.module('console.services', ['ngResource']).
 
 var consoleApp = angular.module('console', ["console.services"]).
   config(function($routeProvider) {
-//    console.log($routeProvider);
-//     $routeProvider.
+     $routeProvider.
+       when('/:appID/details', { controller: "AppDetailsCtrl",
+            templateUrl: "/static/tmpl/details.tmpl"}).
 //       when('/', {controller:MainCtrl, templateUrl:'main.html'}).
 // //      when('/edit/:projectId', {controller:EditCtrl, templateUrl:'detail.html'}).
 // //      when('/new', {controller:CreateCtrl, templateUrl:'detail.html'}).
-//       otherwise({redirectTo:'/'});
+      otherwise({redirectTo:'/'});
   }).
   controller ("NavbarCtrl", function($scope, appState){
     $scope.appState = appState;
 
   }).
+  controller ("AppDetailsCtrl", function($scope, appState, $routeParams){
+    var app = appState.findAndSelectApp($routeParams.appID);
+    $scope.name = app.name;
+    $scope.key = app.key;
+    $scope.secret = app.secret;
+
+  }).
   controller ("AddAppCtrl", function ($scope, $location, App, appState) {
     $scope.model = {};
-    console.log($scope);
 
     $scope.saveApp = function() {
       var newApp = new App({name: $scope.model.app_name});
@@ -61,7 +85,7 @@ var consoleApp = angular.module('console', ["console.services"]).
 
         appState.addApp(newApp);
         $scope.dismiss();
-        $location.path("/details/" + newApp.key);
+        $location.path("/" +  newApp.key + "details/");
       });
     };
   });

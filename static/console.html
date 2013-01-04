@@ -34,7 +34,6 @@
         </form>
       </div>
 
-
       <div id="navbar" ng-controller="NavbarCtrl" class="navbar">
         <div class="navbar-inner">
           <div class="container">
@@ -50,9 +49,12 @@
                   <li><a data-toggle="modal" href="#addAppModal" ><i class="icon-plus"></i> Add App</a></li>
                 </ul>
               </li>
-              <li id="home-menu" class="active"><a href="#/dashboard">Dashboard</a></li>
-              <li id="books-menu"><a href="#stats">Stats</a></li>
-              <li id="videos-menu"><a href="#logs">Logs</a></li>
+              <li>
+                <a href="#/{{appState.selected_app.key}}/details"><i class="icon-cog"></i></a>
+              </li>
+              <li class="active"><a href="#/{{appState.selected_app.key}}/dashboard">Dashboard</a></li>
+              <li><a href="#/{{appState.selected_app.key}}/stats">Stats</a></li>
+              <li><a href="#/{{appState.selected_app.key}}/logs">Logs</a></li>
             </ul>
           </div>
         </div>
@@ -68,10 +70,7 @@
         </div>
 
         <div class="container">
-            <div id="main">
-                <div class="row" ng-repeat="log in logEntries">
-                    {{log.action}}
-                </div>
+            <div id="main" ng-view>
             </div>
 
             <hr>
