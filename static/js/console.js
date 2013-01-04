@@ -145,11 +145,13 @@ var consoleApp = angular.module('console', ["console.services"]).
     };
     $scope.deleteRes = function(idx) {
       profile.restrictions.splice(idx, 1);
+      profile.$save({ '_key': app.key});
     };
     $scope.switchRes = function(first_idx, second_idx) {
       var first = profile.restrictions[first_idx];
       profile.restrictions[first_idx] = profile.restrictions[second_idx];
       profile.restrictions[second_idx] = first;
+      profile.$save({ '_key': app.key});
     };
   }).
   controller ("DeviceDetailsCtrl", function($scope, appState, Device, LogEntry, $routeParams){
@@ -173,7 +175,7 @@ var consoleApp = angular.module('console', ["console.services"]).
         duration: $scope.duration
       });
       $scope.action = $scope.limit_to = $scope.duration = null;
-      // appState.profile.$save({ '_key': appState.selected_app.key});
+      appState.profile.$save({ '_key': appState.selected_app.key});
       $scope.dismiss();
     };
   }).

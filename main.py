@@ -108,7 +108,7 @@ class Users(ModelRestApi):
 class Profiles(ModelRestApi):
     model_cls = Profile
     no_item_raise = True
-    writeable = ('name', 'default', 'allow_per_default')
+    writeable = ('name', 'default', 'allow_per_default', "restrictions")
 
     def _add_item(self, params):
         name = params.get("name")
