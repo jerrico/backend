@@ -132,8 +132,8 @@ class LogEntry(ndb.Model):
     def prepare_json(self):
         prepped = self.to_dict()
         prepped["when"] = date_json_format(prepped["when"])
-        prepped["user"] = self.user and self.user.urlsafe()
-        prepped["device"] = self.device and self.device.urlsafe()
+        prepped["user"] = self.user and self.user.string_id()
+        prepped["device"] = self.device and self.device.string_id()
         return prepped
 
     @classmethod
