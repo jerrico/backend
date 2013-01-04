@@ -6,7 +6,7 @@ angular.module('console.services', ['ngResource']).
     });
   }).
   factory('LogEntry', function($resource){
-    return $resource('/api/v1/logger', {}, {
+    return $resource('/api/v1/logs', {}, {
       query: {method:'GET', params: {"_raw": 1}, isArray:true},
       save: {method:'POST', params: {"_raw": 1}, isArray:false}
     });
@@ -68,7 +68,12 @@ var consoleApp = angular.module('console', ["console.services"]).
             templateUrl: "/static/tmpl/details.tmpl"}).
         when('/:appID/dashboard', { controller: "DashboardCtrl",
             templateUrl: "/static/tmpl/details.tmpl"}).
-        when('/:appID/logs', { controller: "LogsCtrl",
+        when('/:appID/logs', { controller: "ListCtrl",
+            templateUrl: "/static/tmpl/logs.tmpl", resolve: {
+                model: "LogEntry"}}).
+        when('/:appID/users', { controller: "ListCtrl",
+            templateUrl: "/static/tmpl/logs.tmpl"}).
+        when('/:appID/devices', { controller: "ListCtrl",
             templateUrl: "/static/tmpl/logs.tmpl"}).
 //       when('/', {controller:MainCtrl, templateUrl:'main.html'}).
 // //      when('/edit/:projectId', {controller:EditCtrl, templateUrl:'detail.html'}).
@@ -79,9 +84,9 @@ var consoleApp = angular.module('console', ["console.services"]).
     $scope.appState = appState;
 
   }).
-  controller ("LogsCtrl", function($scope, appState, LogEntry, $routeParams){
+  controller ("ListCtrl", function($scope, appState, model, $routeParams){
     var app = appState.findAndSelectApp($routeParams.appID);
-    $scope.logs = LogEntry.query({'_key': app.key});
+    $scope.logs = model.query({'_key': app.key});
   }).
   controller ("DashboardCtrl", function($scope, appState, $routeParams){
     var app = appState.findAndSelectApp($routeParams.appID);

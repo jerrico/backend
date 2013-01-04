@@ -1,32 +1,34 @@
 #!/usr/bin/env python
 
-from utils import verified_api_request, as_json, understand_post
+from utils import verified_api_request, as_json, understand_post, verify_user
 from google.appengine.ext import ndb
-from models import LogEntry, AppAccess
+from models import LogEntry, AppAccess, User, Device
 
 import webapp2
 import json
 
 
-def verify_user(func):
-    def wrapped(self, *args, **kwargs):
-        from google.appengine.api import users
-
-        user = users.get_current_user()
-        if not user:
-            webapp2.abort(400, "User needs to be logged in")
-        self.user = user
-        return func(self, *args, **kwargs)
-    return wrapped
-
-
-class Logger(webapp2.RequestHandler):
+class ModelRestApi(webapp2.RequestHandler):
+    model_cls = None
 
     @verified_api_request
     def get(self):
-        query = LogEntry.query(ancestor=self.app_access.key
-                    ).order(-LogEntry.when)
-        return [x.prepare_json() for x in query.fetch(100)]
+        return [x.prepare_json() for x in self._get_query().fetch(100)]
+
+    def _decorate_query(self, query):
+        return query
+
+    def _get_query(self):
+        return self._decorate_query(self.model_cls.query(
+                    ancestor=self.app_access.key))
+
+
+class Logger(ModelRestApi):
+
+    model_cls = LogEntry
+
+    def _decorate_query(self, query):
+        return query.order(-LogEntry.when)
 
     @verified_api_request
     def post(self):
@@ -45,6 +47,14 @@ class Logger(webapp2.RequestHandler):
                 for x in entries])
         self.response.status = 201
         return {"entries": len(keys)}
+
+
+class Devices(ModelRestApi):
+    model_cls = Device
+
+
+class Users(ModelRestApi):
+    model_cls = User
 
 
 class AppsManager(webapp2.RequestHandler):
@@ -78,6 +88,8 @@ class VerifyAccess(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
     ('/api/v1/verify_access', VerifyAccess),
-    ('/api/v1/logger', Logger),
-    ('/api/v0/my_apps', AppsManager)
+    ('/api/v1/logs', Logger),
+    ('/api/v1/users', Users),
+    ('/api/v1/devices', Devices),
+    ('/api/v1/my_apps', AppsManager)
 ], debug=True)
