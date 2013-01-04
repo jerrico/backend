@@ -1,14 +1,17 @@
 angular.module('console.services', ['ngResource']).
   factory('App', function($resource){
     return $resource('/api/v0/my_apps', {}, {
-      query: {method:'GET', params: {"_raw": 1}, isArray:true}
+      query: {method:'GET', params: {"_raw": 1}, isArray:true},
+      save: {method:'POST', params: {"_raw": 1}, isArray:false}
     });
   }).
   directive('twModal', function() {
     return {
       scope: true,
       link: function(scope, element, attr, ctrl) {
-          console.log(arguments);
+          scope.show = function() {
+            $(element).modal("show");
+          };
           scope.dismiss = function() {
             $(element).modal("hide");
           };
@@ -47,18 +50,18 @@ var consoleApp = angular.module('console', ["console.services"]).
     $scope.appState = appState;
 
   }).
-  controller ("AddAppCtrl", function ($scope, App, appState) {
+  controller ("AddAppCtrl", function ($scope, $location, App, appState) {
     $scope.model = {};
     console.log($scope);
 
     $scope.saveApp = function() {
-      $scope.dismiss();
-      return;
       var newApp = new App({name: $scope.model.app_name});
+      $scope.model.app_name = null;
       newApp.$save(function() {
-        console.log("yay");
 
         appState.addApp(newApp);
+        $scope.dismiss();
+        $location.path("/details/" + newApp.key);
       });
     };
   });
