@@ -50,6 +50,24 @@
         </form>
       </div>
 
+      <div class="modal fade hide" tw-modal="true" id="addRestrictionModal" ng-controller="AddRestrictionCtrl">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">x</button>
+          <h3>Add Restriction</h3>
+        </div>
+        <form method="post" action='' name="login_form" ng-submit="saveRestriction()" >
+          <div class="modal-body">
+
+            <p><input type="text" required="required" class="span3" ng-model="action" placeholder="Action to restrict"></p>
+            <p><input type="number" class="span3" ng-model="limit_to" placeholder="limitation"></p>
+            <p><input type="number" class="span3" ng-model="duration" placeholder="During"></p>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Add Restriction</button>
+          </div>
+        </form>
+      </div>
+
       <div id="navbar" ng-controller="NavbarCtrl" class="navbar">
         <div class="navbar-inner">
           <div class="container">

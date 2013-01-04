@@ -137,10 +137,19 @@ var consoleApp = angular.module('console', ["console.services"]).
     var app = appState.findAndSelectApp($routeParams.appID);
     var profile = Profile.get({profileID: $routeParams.profileID, '_key': app.key});
     $scope.profile = profile;
+    appState.profile = profile;
     console.log(profile);
     $scope.makeDefault = function() {
       profile["default"] = true;
       profile.$save({ '_key': app.key});
+    };
+    $scope.deleteRes = function(idx) {
+      profile.restrictions.splice(idx, 1);
+    };
+    $scope.switchRes = function(first_idx, second_idx) {
+      var first = profile.restrictions[first_idx];
+      profile.restrictions[first_idx] = profile.restrictions[second_idx];
+      profile.restrictions[second_idx] = first;
     };
   }).
   controller ("DeviceDetailsCtrl", function($scope, appState, Device, LogEntry, $routeParams){
@@ -155,6 +164,18 @@ var consoleApp = angular.module('console', ["console.services"]).
     $scope.name = app.name;
     $scope.key = app.key;
     $scope.secret = app.secret;
+  }).
+  controller ("AddRestrictionCtrl", function ($scope, $location, appState) {
+    $scope.saveRestriction = function() {
+      appState.profile.restrictions.push({
+        action: $scope.action,
+        limit_to: $scope.limit_to,
+        duration: $scope.duration
+      });
+      $scope.action = $scope.limit_to = $scope.duration = null;
+      // appState.profile.$save({ '_key': appState.selected_app.key});
+      $scope.dismiss();
+    };
   }).
   controller ("AddProfileCtrl", function ($scope, $location, Profile, appState) {
     $scope.name = null;
