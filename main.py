@@ -10,10 +10,25 @@ import json
 
 class ModelRestApi(webapp2.RequestHandler):
     model_cls = None
+    no_item_raise = False
 
     @verified_api_request
-    def get(self):
-        return [x.prepare_json() for x in self._get_query().fetch(100)]
+    def get(self, item_id=None):
+        # list service
+        if not item_id:
+            return [x.prepare_json() for x in self._get_query().fetch(100)]
+
+        # specific item requested
+        item = self._get_item_key(item_id).get()
+        item_data = {}
+        if item:
+            item_data = item.prepare_json()
+        elif self.no_item_raise:
+            webapp2.abort(404, "Item not found")
+        return item_data
+
+    def _get_item_key(self, item_id):
+        return ndb.Key(self.model_cls, item_id, parent=self.app_access.key)
 
     def _decorate_query(self, query):
         return query
@@ -90,6 +105,7 @@ app = webapp2.WSGIApplication([
     ('/api/v1/verify_access', VerifyAccess),
     ('/api/v1/logs', Logger),
     ('/api/v1/users', Users),
+    ('/api/v1/devices/(.*?)', Devices),
     ('/api/v1/devices', Devices),
     ('/api/v1/my_apps', AppsManager)
 ], debug=True)

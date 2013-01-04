@@ -1,0 +1,43 @@
+
+<h2>Device: {{id}}</h2>
+<h3>Device Info</h3>
+<p>We know the following about the device:</p>
+<table>
+	<thead>
+		<tr>
+			<th>Key</th>
+			<th>Value</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat="entry in device">
+			<td>{{entry}}</td>
+			<td>{{device[entry]}}</td>
+		</tr>
+	</tbody>
+</table>
+
+<h3>Latest Activities</h3>
+
+<table class="table table-striped table-bordered table-hover">
+	<thead>
+		<tr>
+			<th>#</th>
+			<th>Timestamp</th>
+			<th>Action</th>
+			<th>User</th>
+			<th>Quantity</th>
+			<th>Unit</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat="log in logs">
+			<td></td>
+			<td>{{log.when}}</td>
+			<td>{{log.action}}</td>
+			<td><a ng-href="#/{{appState.selected_app.key}}/users/{{log.user}}">{{log.user}}</a></td>
+			<td>{{log.quantity}}</td>
+			<td>{{log.unit}}</td>
+		</tr>
+	</tbody>
+</table>

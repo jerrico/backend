@@ -1,24 +1,28 @@
 angular.module('console.services', ['ngResource']).
   factory('App', function($resource){
     return $resource('/api/v1/my_apps', {}, {
+      get: {method:'GET', params: {"_raw": 1}, isArray:false},
       query: {method:'GET', params: {"_raw": 1}, isArray:true},
       save: {method:'POST', params: {"_raw": 1}, isArray:false}
     });
   }).
   factory('LogEntry', function($resource){
     return $resource('/api/v1/logs', {}, {
+      get: {method:'GET', params: {"_raw": 1}, isArray:false},
       query: {method:'GET', params: {"_raw": 1}, isArray:true},
       save: {method:'POST', params: {"_raw": 1}, isArray:false}
     });
   }).
   factory('User', function($resource){
-    return $resource('/api/v1/users', {}, {
+    return $resource('/api/v1/users/:userID', {userId:'@id'}, {
+      get: {method:'GET', params: {"_raw": 1}, isArray:false},
       query: {method:'GET', params: {"_raw": 1}, isArray:true},
       save: {method:'POST', params: {"_raw": 1}, isArray:false}
     });
   }).
   factory('Device', function($resource){
-    return $resource('/api/v1/devices', {}, {
+    return $resource('/api/v1/devices/:deviceID', {deviceID:'@id'}, {
+      get: {method:'GET', params: {"_raw": 1}, isArray:false},
       query: {method:'GET', params: {"_raw": 1}, isArray:true},
       save: {method:'POST', params: {"_raw": 1}, isArray:false}
     });
@@ -89,6 +93,8 @@ var consoleApp = angular.module('console', ["console.services"]).
         when('/:appID/devices', { controller: "ListCtrl",
             templateUrl: "/static/tmpl/logs.tmpl", resolve: {
                 model: "Device"}}).
+        when('/:appID/devices/:deviceID', { controller: "DeviceDetailsCtrl",
+            templateUrl: "/static/tmpl/device_details.tmpl"}).
 //       when('/', {controller:MainCtrl, templateUrl:'main.html'}).
 // //      when('/edit/:projectId', {controller:EditCtrl, templateUrl:'detail.html'}).
 // //      when('/new', {controller:CreateCtrl, templateUrl:'detail.html'}).
@@ -107,6 +113,13 @@ var consoleApp = angular.module('console', ["console.services"]).
     $scope.name = app.name;
     $scope.key = app.key;
     $scope.secret = app.secret;
+  }).
+  controller ("DeviceDetailsCtrl", function($scope, appState, Device, LogEntry, $routeParams){
+    var app = appState.findAndSelectApp($routeParams.appID);
+    var device = Device.get({deviceID: $routeParams.deviceID, '_key': app.key});
+    $scope.id = $routeParams.deviceID;
+    $scope.device = device;
+    $scope.logs = LogEntry.query({'_key': app.key, "device": $routeParams.deviceID });
   }).
   controller ("AppDetailsCtrl", function($scope, appState, $routeParams){
     var app = appState.findAndSelectApp($routeParams.appID);
