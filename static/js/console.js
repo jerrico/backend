@@ -1,4 +1,4 @@
-angular.module('console.services', ['ngResource']).
+angular.module('console.services', ['ngResource', 'ui']).
   factory('App', function($resource){
     return $resource('/api/v1/my_apps', {}, {
       get: {method:'GET', params: {"_raw": 1}, isArray:false},
@@ -46,6 +46,27 @@ angular.module('console.services', ['ngResource']).
           };
         }
       };
+  }).
+  directive('editable', function() {
+    return {
+      require: 'ngModel',
+      link: function(scope, elm, attrs, model) {
+        elm.editable(scope.$eval(attrs.editable));
+        model.$render = function() {
+            elm.editable('setValue', model.$viewValue);
+        };
+        elm.on('save', function(e, params) {
+            model.$setViewValue(params.newValue);
+            scope.$apply();
+        });
+        if (attrs.editableSaved) {
+          console.log(attrs.editableSaved);
+          elm.on('save', function(){
+            scope.$eval(attrs.editableSaved);
+           });
+        }
+      }
+    };
   }).
   service('appState', function(App, Profile, $rootScope){
     var self = this;

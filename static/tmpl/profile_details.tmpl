@@ -1,6 +1,6 @@
 
 <div class="row">
-	<h2 class="span">Profile: {{profile.name}}&nbsp;<span ng-show="profile.default" class="badge">default</span><span ng-show="profile.allow_per_default" class="badge badge-success">allow per default</span>
+	<h2 class="span">Profile: <span editable editable-saved="saveModel()" ng-model="profile.name"></span>&nbsp;<span ng-show="profile.default" class="badge">default</span><span ng-show="profile.allow_per_default" class="badge badge-success">allow per default</span>
 	</h2>
 	
 	<div class="pull-right">
