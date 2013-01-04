@@ -2,7 +2,7 @@
 
 from utils import verified_api_request, as_json, understand_post, verify_user
 from google.appengine.ext import ndb
-from models import LogEntry, AppAccess, User, Device
+from models import LogEntry, AppAccess, User, Device, Profile
 
 import webapp2
 import json
@@ -26,6 +26,22 @@ class ModelRestApi(webapp2.RequestHandler):
         elif self.no_item_raise:
             webapp2.abort(404, "Item not found")
         return item_data
+
+    @verified_api_request
+    @understand_post
+    def post(self, params, item_id=None):
+        if item_id:
+            model = self._get_item_key(item_id).get()
+            if model:
+                return self._update_item(model, params)
+            elif self.no_item_raise:
+                webapp2.abort(404, "Item not found")
+        return self._add_item(params)
+
+    def _add_item(self, params):
+        model = self.model_cls(parent=self.app_access.key, **params)
+        model.put()
+        return model.prepare_json()
 
     def _get_item_key(self, item_id):
         return ndb.Key(self.model_cls, item_id, parent=self.app_access.key)
@@ -72,6 +88,18 @@ class Users(ModelRestApi):
     model_cls = User
 
 
+class Profiles(ModelRestApi):
+    model_cls = Profile
+
+    def _add_item(self, params):
+        name = params.get("name")
+        if not name:
+            webapp2.abort(400, "Please specify the name of the profile")
+        model = self.model_cls(parent=self.app_access.key, name=name)
+        model.put()
+        return model.prepare_json()
+
+
 class AppsManager(webapp2.RequestHandler):
 
     def get(self):
@@ -104,6 +132,9 @@ class VerifyAccess(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/api/v1/verify_access', VerifyAccess),
     ('/api/v1/logs', Logger),
+    ('/api/v1/profiles/(.*?)', Profiles),
+    ('/api/v1/profiles', Profiles),
+    ('/api/v1/users/(.*?)', Users),
     ('/api/v1/users', Users),
     ('/api/v1/devices/(.*?)', Devices),
     ('/api/v1/devices', Devices),

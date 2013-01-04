@@ -107,6 +107,13 @@ class Profile(ndb.Model):
     # following the restrictions
     restrictions = ndb.StructuredProperty(Restriction, repeated=True)
 
+    def prepare_json(self):
+        prepped = self.to_dict()
+        prepped["id"] = self.key.string_id()
+        prepped["created"] = date_json_format(prepped["created"])
+        prepped["last_change"] = date_json_format(prepped["last_change"])
+        return prepped
+
 
 # for User Info
 class User(ndb.Expando):

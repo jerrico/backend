@@ -34,6 +34,22 @@
         </form>
       </div>
 
+      <div class="modal fade hide" tw-modal="true" id="addProfileModal" ng-controller="AddProfileCtrl">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">x</button>
+          <h3>Create new Profile</h3>
+        </div>
+        <form method="post" action='' name="login_form" ng-submit="saveProfile(user)" >
+          <div class="modal-body">
+
+            <p><input type="text" required="required" class="span3" ng-model="name" placeholder="Name this Profile"></p>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Add Profile</button>
+          </div>
+        </form>
+      </div>
+
       <div id="navbar" ng-controller="NavbarCtrl" class="navbar">
         <div class="navbar-inner">
           <div class="container">
@@ -53,8 +69,20 @@
                   {{appState.selected_app.name}}&nbsp;<span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
+                  <li class="dropdown-submenu">
+                    <a tabindex="-1" href="#"><i class="icon-home"></i> Profiles</a>
+                      <ul class="dropdown-menu">
+                        <li ng-repeat="profile in appState.profiles">{{profile.name}}</li>
+                        <li class="divider"></li>
+                        <li><a data-toggle="modal" href="#addProfileModal" ><i class="icon-plus"></i> Add Profile</a></li>
+                          </ul>
+                  </li>
                   <li>
-                    <a href="#/{{appState.selected_app.key}}/details"><i class="icon-info-sign"></i> App Info</a>
+                    <a href="#/{{appState.selected_app.key}}/settings"><i class="icon-cog"></i> Settings</a>
+                  </li>
+                  <li class="divider"></li>
+                  <li>
+                    <a href="#/{{appState.selected_app.key}}/details"><i class="icon-info-sign"></i> Info</a>
                   </li>
                 </ul>
               </li>

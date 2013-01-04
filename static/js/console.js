@@ -13,8 +13,15 @@ angular.module('console.services', ['ngResource']).
       save: {method:'POST', params: {"_raw": 1}, isArray:false}
     });
   }).
+  factory('Profile', function($resource){
+    return $resource('/api/v1/profiles/:profileID', {profileID:'@id', "_key": "@appKey", "_raw": 1}, {
+      get: {method:'GET', params: {}, isArray:false},
+      query: {method:'GET', params: {}, isArray:true},
+      save: {method:'POST', params: {}, isArray:false}
+    });
+  }).
   factory('User', function($resource){
-    return $resource('/api/v1/users/:userID', {userId:'@id'}, {
+    return $resource('/api/v1/users/:userID', {userID:'@id'}, {
       get: {method:'GET', params: {"_raw": 1}, isArray:false},
       query: {method:'GET', params: {"_raw": 1}, isArray:true},
       save: {method:'POST', params: {"_raw": 1}, isArray:false}
@@ -40,12 +47,15 @@ angular.module('console.services', ['ngResource']).
         }
       };
   }).
-  service('appState', function(App, $rootScope){
+  service('appState', function(App, Profile, $rootScope){
     var self = this;
     self.selected_app = null;
+    self.profiles = null;
 
     self.selectApp = function(app) {
+      if (!app.profiles) app.profiles = Profile.query({_key:app.key});
       self.selected_app = app;
+      self.profiles = app.profiles;
     };
 
     self.addApp = function(app) {
@@ -84,17 +94,23 @@ var consoleApp = angular.module('console', ["console.services"]).
             templateUrl: "/static/tmpl/details.tmpl"}).
         when('/:appID/dashboard', { controller: "DashboardCtrl",
             templateUrl: "/static/tmpl/details.tmpl"}).
+
+        when('/:appID/devices/:deviceID', { controller: "DeviceDetailsCtrl",
+            templateUrl: "/static/tmpl/device_details.tmpl"}).
+
+        // listings
         when('/:appID/logs', { controller: "ListCtrl",
             templateUrl: "/static/tmpl/logs.tmpl", resolve: {
                 model: "LogEntry"}}).
         when('/:appID/users', { controller: "ListCtrl",
             templateUrl: "/static/tmpl/logs.tmpl", resolve: {
-                model: "Users"}}).
+                model: "User"}}).
         when('/:appID/devices', { controller: "ListCtrl",
             templateUrl: "/static/tmpl/logs.tmpl", resolve: {
                 model: "Device"}}).
-        when('/:appID/devices/:deviceID', { controller: "DeviceDetailsCtrl",
-            templateUrl: "/static/tmpl/device_details.tmpl"}).
+        when('/:appID/profiles', { controller: "ListCtrl",
+            templateUrl: "/static/tmpl/profiles.tmpl", resolve: {
+                model: "Profile"}}).
 //       when('/', {controller:MainCtrl, templateUrl:'main.html'}).
 // //      when('/edit/:projectId', {controller:EditCtrl, templateUrl:'detail.html'}).
 // //      when('/new', {controller:CreateCtrl, templateUrl:'detail.html'}).
@@ -126,6 +142,24 @@ var consoleApp = angular.module('console', ["console.services"]).
     $scope.name = app.name;
     $scope.key = app.key;
     $scope.secret = app.secret;
+  }).
+  controller ("AddProfileCtrl", function ($scope, $location, Profile, appState) {
+    $scope.name = null;
+
+    $scope.saveProfile = function() {
+      var app = appState.selected_app,
+          newProfile = new Profile({"name": $scope.name, "appKey": app.key});
+      if (!app.profiles) app.profiles = [];
+
+      $scope.name = null;
+      newProfile.$save(function() {
+
+        // appState.addProfile(newProfile);
+        app.profiles.push(newProfile);
+        $scope.dismiss();
+        $location.path("/" + appState.selected_app.key + "/profiles/" + newProfile.id);
+      });
+    };
   }).
   controller ("AddAppCtrl", function ($scope, $location, App, appState) {
     $scope.model = {};
