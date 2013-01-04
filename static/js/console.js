@@ -139,19 +139,18 @@ var consoleApp = angular.module('console', ["console.services"]).
     $scope.profile = profile;
     appState.profile = profile;
     console.log(profile);
-    $scope.makeDefault = function() {
-      profile["default"] = true;
+    $scope.saveModel = function save(){
       profile.$save({ '_key': app.key});
     };
     $scope.deleteRes = function(idx) {
       profile.restrictions.splice(idx, 1);
-      profile.$save({ '_key': app.key});
+      saveModel();
     };
     $scope.switchRes = function(first_idx, second_idx) {
       var first = profile.restrictions[first_idx];
       profile.restrictions[first_idx] = profile.restrictions[second_idx];
       profile.restrictions[second_idx] = first;
-      profile.$save({ '_key': app.key});
+      saveModel();
     };
   }).
   controller ("DeviceDetailsCtrl", function($scope, appState, Device, LogEntry, $routeParams){

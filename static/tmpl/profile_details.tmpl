@@ -1,11 +1,15 @@
 
 <div class="row">
-	<h2>Profile: {{profile.name}}&nbsp;
-		<ng-switch on="profile.default">
-			<span ng-switch-when="true" class="badge">is Default</span>
-			<span ng-switch-default><a ng-click="makeDefault()" class="btn btn-mini">Make Default</a></span>
-		</ng-switch>
+	<h2 class="span">Profile: {{profile.name}}&nbsp;<span ng-show="profile.default" class="badge">default</span><span ng-show="profile.allow_per_default" class="badge badge-success">allow per default</span>
 	</h2>
+	
+	<div class="pull-right">
+		<a ng-hide="profile.default" ng-click="profile['default'] = true;
+      saveModel();" class="btn btn-mini">Make Default</a>&nbsp;
+		<a ng-click="profile.allow_per_default = !profile.allow_per_default; saveModel()" class="btn btn-mini"> Toggle Allow Mode</a>
+  	</div>
+
+		
 </div>
 <div class="row">
 	<span>Created: {{profile.created}}</span>
