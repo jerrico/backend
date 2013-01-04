@@ -49,22 +49,21 @@ class Logger(webapp2.RequestHandler):
 
 class AppsManager(webapp2.RequestHandler):
 
-    @verify_user
-    @as_json
     def get(self):
         return [x.prepare_json() for x in AppAccess.query()]
 
-    @verify_user
-    @as_json
+    get = verified_api_request(get, without_key=True)
+
     @understand_post
     def post(self, params):
         name = params.get("name", None)
         if not name:
-            raise ValueError(self.request.POST)
             webapp2.abort(400, "No app name given")
         app = AppAccess.create(name)
         app.put()
         return app.prepare_json()
+
+    post = verified_api_request(post, without_key=True)
 
 
 class VerifyAccess(webapp2.RequestHandler):

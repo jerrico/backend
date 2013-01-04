@@ -1,5 +1,6 @@
 
 from google.appengine.ext.ndb import Key
+from google.appengine.api import users
 
 import hmac
 import hashlib
@@ -7,6 +8,20 @@ import binascii
 import webapp2
 import json
 import urllib
+
+
+def _get_user():
+    user = users.get_current_user()
+    if not user:
+        webapp2.abort(400, "User needs to be logged in")
+    return user
+
+
+def verify_user(func):
+    def wrapped(self, *args, **kwargs):
+        self.user = _get_user()
+        return func(self, *args, **kwargs)
+    return wrapped
 
 
 def understand_post(func):
@@ -18,20 +33,25 @@ def understand_post(func):
     return wrapped
 
 
-def verify_request(method, url, params):
+def _get_key(params):
     app_key = params.get("_key")
     if not app_key:
         webapp2.abort(400, "_key and _signature must be provided")
+    try:
+        app_access = Key(urlsafe=app_key).get()
+        secret = app_access.secret
+    except Exception:
+        webapp2.abort(401, "Unknown key: {}".format(app_key))
+    return app_access
 
+
+def verify_request(method, url, params):
     signature = params.pop("_signature")
     if not signature:
         webapp2.abort(400, "_key and _signature must be provided")
 
-    try:
-        app_access = Key(urlsafe=app_key).get()
-        app_secret = app_access.secret
-    except Exception:
-        webapp2.abort(401, "Unknown key: {}".format(app_key))
+    app_access = _get_key(params)
+    app_secret = app_access.secret
 
     enc_params = urllib.urlencode(params)
 
@@ -69,11 +89,16 @@ def as_json(fun):
     return wrapped
 
 
-def verified_api_request(func):
+def verified_api_request(func, without_key=False):
     def wrapped(handler, *args, **kwargs):
         params = handler.request.method == "POST" and \
                 handler.request.POST or handler.request.GET
-        handler.app_access = verify_request(handler.request.method,
+        if '_signature' in params:
+            handler.app_access = verify_request(handler.request.method,
                     handler.request.path_url, params)
+        else:
+            handler.user = _get_user()
+            if not without_key:
+                handler.app_access = _get_key(params)
         return func(handler, *args, **kwargs)
     return as_json(wrapped)

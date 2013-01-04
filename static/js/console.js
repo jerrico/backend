@@ -1,6 +1,12 @@
 angular.module('console.services', ['ngResource']).
   factory('App', function($resource){
-    return $resource('/api/v0/my_apps', {}, {
+    return $resource('/api/v1/my_apps', {}, {
+      query: {method:'GET', params: {"_raw": 1}, isArray:true},
+      save: {method:'POST', params: {"_raw": 1}, isArray:false}
+    });
+  }).
+  factory('LogEntry', function($resource){
+    return $resource('/api/v1/logger', {}, {
       query: {method:'GET', params: {"_raw": 1}, isArray:true},
       save: {method:'POST', params: {"_raw": 1}, isArray:false}
     });
@@ -62,6 +68,8 @@ var consoleApp = angular.module('console', ["console.services"]).
             templateUrl: "/static/tmpl/details.tmpl"}).
         when('/:appID/dashboard', { controller: "DashboardCtrl",
             templateUrl: "/static/tmpl/details.tmpl"}).
+        when('/:appID/logs', { controller: "LogsCtrl",
+            templateUrl: "/static/tmpl/logs.tmpl"}).
 //       when('/', {controller:MainCtrl, templateUrl:'main.html'}).
 // //      when('/edit/:projectId', {controller:EditCtrl, templateUrl:'detail.html'}).
 // //      when('/new', {controller:CreateCtrl, templateUrl:'detail.html'}).
@@ -70,6 +78,10 @@ var consoleApp = angular.module('console', ["console.services"]).
   controller ("NavbarCtrl", function($scope, appState){
     $scope.appState = appState;
 
+  }).
+  controller ("LogsCtrl", function($scope, appState, LogEntry, $routeParams){
+    var app = appState.findAndSelectApp($routeParams.appID);
+    $scope.logs = LogEntry.query({'_key': app.key});
   }).
   controller ("DashboardCtrl", function($scope, appState, $routeParams){
     var app = appState.findAndSelectApp($routeParams.appID);

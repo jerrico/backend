@@ -1,0 +1,25 @@
+
+<table class="table table-striped table-bordered table-hover">
+	<thead>
+		<tr>
+			<th>#</th>
+			<th>Timestamp</th>
+			<th>Action</th>
+			<th>User</th>
+			<th>Device</th>
+			<th>Quantity</th>
+			<th>Unit</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat="log in logs">
+			<td></td>
+			<td>{{log.when}}</td>
+			<td>{{log.action}}</td>
+			<td>{{log.user}}</td>
+			<td>{{log.device}}</td>
+			<td>{{log.quantity}}</td>
+			<td>{{log.unit}}</td>
+		</tr>
+	</tbody>
+</table>
