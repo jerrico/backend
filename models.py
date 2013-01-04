@@ -114,6 +114,14 @@ class Profile(ndb.Model):
         prepped["last_change"] = date_json_format(prepped["last_change"])
         return prepped
 
+    def _pre_put_hook(self):
+        if self.default:
+            cur_default = Profile.query(Profile.default == True,
+                        ancestor=self.key.parent()).get()
+            if cur_default != self:
+                cur_default.default = False
+                cur_default.put()
+
 
 # for User Info
 class User(ndb.Expando):
