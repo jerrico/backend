@@ -11,6 +11,18 @@ angular.module('console.services', ['ngResource']).
       save: {method:'POST', params: {"_raw": 1}, isArray:false}
     });
   }).
+  factory('User', function($resource){
+    return $resource('/api/v1/users', {}, {
+      query: {method:'GET', params: {"_raw": 1}, isArray:true},
+      save: {method:'POST', params: {"_raw": 1}, isArray:false}
+    });
+  }).
+  factory('Device', function($resource){
+    return $resource('/api/v1/devices', {}, {
+      query: {method:'GET', params: {"_raw": 1}, isArray:true},
+      save: {method:'POST', params: {"_raw": 1}, isArray:false}
+    });
+  }).
   directive('twModal', function() {
     return {
       scope: true,
@@ -72,9 +84,11 @@ var consoleApp = angular.module('console', ["console.services"]).
             templateUrl: "/static/tmpl/logs.tmpl", resolve: {
                 model: "LogEntry"}}).
         when('/:appID/users', { controller: "ListCtrl",
-            templateUrl: "/static/tmpl/logs.tmpl"}).
+            templateUrl: "/static/tmpl/logs.tmpl", resolve: {
+                model: "Users"}}).
         when('/:appID/devices', { controller: "ListCtrl",
-            templateUrl: "/static/tmpl/logs.tmpl"}).
+            templateUrl: "/static/tmpl/logs.tmpl", resolve: {
+                model: "Device"}}).
 //       when('/', {controller:MainCtrl, templateUrl:'main.html'}).
 // //      when('/edit/:projectId', {controller:EditCtrl, templateUrl:'detail.html'}).
 // //      when('/new', {controller:CreateCtrl, templateUrl:'detail.html'}).
@@ -86,7 +100,7 @@ var consoleApp = angular.module('console', ["console.services"]).
   }).
   controller ("ListCtrl", function($scope, appState, model, $routeParams){
     var app = appState.findAndSelectApp($routeParams.appID);
-    $scope.logs = model.query({'_key': app.key});
+    $scope.list = model.query({'_key': app.key});
   }).
   controller ("DashboardCtrl", function($scope, appState, $routeParams){
     var app = appState.findAndSelectApp($routeParams.appID);

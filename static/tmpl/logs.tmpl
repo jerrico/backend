@@ -12,12 +12,12 @@
 		</tr>
 	</thead>
 	<tbody>
-		<tr ng-repeat="log in logs">
+		<tr ng-repeat="log in list">
 			<td></td>
 			<td>{{log.when}}</td>
 			<td>{{log.action}}</td>
-			<td>{{log.user}}</td>
-			<td>{{log.device}}</td>
+			<td><a ng-href="#/{{appState.selected_app.key}}/users/{{log.user}}">{{log.user}}</a></td>
+			<td><a ng-href="#/{{appState.selected_app.key}}/devices/{{log.device}}">{{log.device}}</a></td>
 			<td>{{log.quantity}}</td>
 			<td>{{log.unit}}</td>
 		</tr>
