@@ -11,6 +11,7 @@ import json
 class ModelRestApi(webapp2.RequestHandler):
     model_cls = None
     no_item_raise = False
+    writeable = ()
 
     @verified_api_request
     def get(self, item_id=None):
@@ -38,20 +39,36 @@ class ModelRestApi(webapp2.RequestHandler):
                 webapp2.abort(404, "Item not found")
         return self._add_item(params)
 
+    def _update_item(self, model, params):
+        model.populate(**self._decorate_params(params))
+        model.put()
+        return model.prepare_json()
+
     def _add_item(self, params):
         model = self.model_cls(parent=self.app_access.key, **params)
         model.put()
         return model.prepare_json()
 
     def _get_item_key(self, item_id):
-        return ndb.Key(self.model_cls, item_id, parent=self.app_access.key)
-
-    def _decorate_query(self, query):
-        return query
+        return ndb.Key(self.model_cls, self._decorate_item_id(item_id),
+                parent=self.app_access.key)
 
     def _get_query(self):
         return self._decorate_query(self.model_cls.query(
                     ancestor=self.app_access.key))
+
+    def _decoreate_item_id(self, item_id):
+        return item_id
+
+    def _decorate_query(self, query):
+        return query
+
+    def _decorate_params(self, params):
+        res_params = {}
+        for key in self.writeable:
+            if key in params:
+                res_params[key] = params[key]
+        return res_params
 
 
 class Logger(ModelRestApi):
@@ -90,6 +107,8 @@ class Users(ModelRestApi):
 
 class Profiles(ModelRestApi):
     model_cls = Profile
+    no_item_raise = True
+    writeable = ('name', 'default', 'allow_per_default')
 
     def _add_item(self, params):
         name = params.get("name")
@@ -98,6 +117,9 @@ class Profiles(ModelRestApi):
         model = self.model_cls(parent=self.app_access.key, name=name)
         model.put()
         return model.prepare_json()
+
+    def _decorate_item_id(self, item_id):
+        return int(item_id)
 
 
 class AppsManager(webapp2.RequestHandler):
@@ -132,7 +154,7 @@ class VerifyAccess(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/api/v1/verify_access', VerifyAccess),
     ('/api/v1/logs', Logger),
-    ('/api/v1/profiles/(.*?)', Profiles),
+    ('/api/v1/profiles/(\d*?)', Profiles),
     ('/api/v1/profiles', Profiles),
     ('/api/v1/users/(.*?)', Users),
     ('/api/v1/users', Users),

@@ -1,0 +1,11 @@
+
+<h2>Profile: {{profile.name}}&nbsp;<ng-switch on="profile.default">
+		<span ng-switch-when="true" class="badge">is Default</span>
+		<span ng-switch-default><a ng-click="makeDefault()" class="btn btn-mini">Make Default</a></span>
+	</ng-switch></h2>
+
+<p>
+	<span>Created: {{profile.created}}</span>
+
+</p>
+

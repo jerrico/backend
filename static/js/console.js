@@ -98,6 +98,9 @@ var consoleApp = angular.module('console', ["console.services"]).
         when('/:appID/devices/:deviceID', { controller: "DeviceDetailsCtrl",
             templateUrl: "/static/tmpl/device_details.tmpl"}).
 
+        when('/:appID/profiles/:profileID', { controller: "ProfileDetailsCtrl",
+            templateUrl: "/static/tmpl/profile_details.tmpl"}).
+
         // listings
         when('/:appID/logs', { controller: "ListCtrl",
             templateUrl: "/static/tmpl/logs.tmpl", resolve: {
@@ -129,6 +132,16 @@ var consoleApp = angular.module('console', ["console.services"]).
     $scope.name = app.name;
     $scope.key = app.key;
     $scope.secret = app.secret;
+  }).
+  controller ("ProfileDetailsCtrl", function($scope, appState, Profile, LogEntry, $routeParams){
+    var app = appState.findAndSelectApp($routeParams.appID);
+    var profile = Profile.get({profileID: $routeParams.profileID, '_key': app.key});
+    $scope.profile = profile;
+    console.log(profile);
+    $scope.makeDefault = function() {
+      profile["default"] = true;
+      profile.$save({ '_key': app.key});
+    };
   }).
   controller ("DeviceDetailsCtrl", function($scope, appState, Device, LogEntry, $routeParams){
     var app = appState.findAndSelectApp($routeParams.appID);

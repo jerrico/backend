@@ -109,7 +109,7 @@ class Profile(ndb.Model):
 
     def prepare_json(self):
         prepped = self.to_dict()
-        prepped["id"] = self.key.string_id()
+        prepped["id"] = self.key.id()
         prepped["created"] = date_json_format(prepped["created"])
         prepped["last_change"] = date_json_format(prepped["last_change"])
         return prepped
@@ -139,8 +139,8 @@ class LogEntry(ndb.Model):
     def prepare_json(self):
         prepped = self.to_dict()
         prepped["when"] = date_json_format(prepped["when"])
-        prepped["user"] = self.user and self.user.string_id()
-        prepped["device"] = self.device and self.device.string_id()
+        prepped["user"] = self.user and self.user.id()
+        prepped["device"] = self.device and self.device.id()
         return prepped
 
     @classmethod
