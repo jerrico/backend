@@ -44,7 +44,7 @@
                   <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
-                  <li ng-repeat="app in appState.apps"><a ng-click="appState.selectApp(app)">{{app.name}}</a></li>
+                  <li ng-repeat="app in appState.apps"><a href="#/{{app.key}}/dashboard">{{app.name}}</a></li>
                   <li class="divider"></li>
                   <li><a data-toggle="modal" href="#addAppModal" ><i class="icon-plus"></i> Add App</a></li>
                 </ul>

@@ -51,13 +51,16 @@ angular.module('console.services', ['ngResource']).
       // preselect first
       self.selectApp(self.apps[0]);
     });
-  })
-;
+
+    $rootScope.appState = self;
+  });
 
 var consoleApp = angular.module('console', ["console.services"]).
   config(function($routeProvider) {
      $routeProvider.
-       when('/:appID/details', { controller: "AppDetailsCtrl",
+        when('/:appID/details', { controller: "AppDetailsCtrl",
+            templateUrl: "/static/tmpl/details.tmpl"}).
+        when('/:appID/dashboard', { controller: "DashboardCtrl",
             templateUrl: "/static/tmpl/details.tmpl"}).
 //       when('/', {controller:MainCtrl, templateUrl:'main.html'}).
 // //      when('/edit/:projectId', {controller:EditCtrl, templateUrl:'detail.html'}).
@@ -68,12 +71,17 @@ var consoleApp = angular.module('console', ["console.services"]).
     $scope.appState = appState;
 
   }).
+  controller ("DashboardCtrl", function($scope, appState, $routeParams){
+    var app = appState.findAndSelectApp($routeParams.appID);
+    $scope.name = app.name;
+    $scope.key = app.key;
+    $scope.secret = app.secret;
+  }).
   controller ("AppDetailsCtrl", function($scope, appState, $routeParams){
     var app = appState.findAndSelectApp($routeParams.appID);
     $scope.name = app.name;
     $scope.key = app.key;
     $scope.secret = app.secret;
-
   }).
   controller ("AddAppCtrl", function ($scope, $location, App, appState) {
     $scope.model = {};
