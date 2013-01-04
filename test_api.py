@@ -8,7 +8,7 @@ import requests
 import json
 
 KEY = "ahFkZXZ-amVycnktc2VydmljZXIPCxIJQXBwQWNjZXNzGAEM"
-SECRET = "santa loves you"
+SECRET = "ff8337a69085457791fa9666d3774707"
 BASE_PATH = "/api/v1/"
 BASE_URL = "http://localhost:9092" + BASE_PATH
 
