@@ -37,24 +37,32 @@
       <div id="navbar" ng-controller="NavbarCtrl" class="navbar">
         <div class="navbar-inner">
           <div class="container">
-            <ul class="nav" id="main-nav">              
-              <li>
+            <ul class="nav" id="main-nav">
+              <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                  {{appState.selected_app.name}}
-                  <span class="caret"></span>
+                  Select App
                 </a>
                 <ul class="dropdown-menu">
                   <li ng-repeat="app in appState.apps"><a href="#/{{app.key}}/dashboard">{{app.name}}</a></li>
                   <li class="divider"></li>
                   <li><a data-toggle="modal" href="#addAppModal" ><i class="icon-plus"></i> Add App</a></li>
                 </ul>
-              </li>
-              <li>
-                <a href="#/{{appState.selected_app.key}}/details"><i class="icon-cog"></i></a>
+              </li>              
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                  {{appState.selected_app.name}}&nbsp;<span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a href="#/{{appState.selected_app.key}}/details"><i class="icon-info-sign"></i> App Info</a>
+                  </li>
+                </ul>
               </li>
               <li class="active"><a href="#/{{appState.selected_app.key}}/dashboard">Dashboard</a></li>
-              <li><a href="#/{{appState.selected_app.key}}/stats">Stats</a></li>
-              <li><a href="#/{{appState.selected_app.key}}/logs">Logs</a></li>
+              <li><a href="#/{{appState.selected_app.key}}/stats">Statistics</a></li>
+              <li><a href="#/{{appState.selected_app.key}}/devices"><i class="icon-print icon-white"></i> Devices</a></li>
+              <li><a href="#/{{appState.selected_app.key}}/users"><i class="icon-user icon-white"></i> Users</a></li>
+              <li><a href="#/{{appState.selected_app.key}}/logs"><i class="icon-th-list icon-white"></i> Raw Logs</a></li>
             </ul>
           </div>
         </div>
