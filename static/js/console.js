@@ -191,13 +191,10 @@ var consoleApp = angular.module('console', ["console.services"]).
     };
   }).
   controller ("AddRestrictionCtrl", function ($scope, $location, appState) {
+    $scope.params = {};
     $scope.saveRestriction = function() {
-      appState.profile.restrictions.push({
-        action: $scope.action,
-        limit_to: $scope.limit_to,
-        duration: $scope.duration
-      });
-      $scope.action = $scope.limit_to = $scope.duration = null;
+      appState.profile.restrictions.push($scope.params);
+      $scope.params = {};
       appState.profile.$save({ '_key': appState.selected_app.key});
       $scope.dismiss();
     };

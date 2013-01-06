@@ -95,23 +95,35 @@ class Restriction(polymodel.PolyModel):
     # this is not a real model as it is a Structured on Profile
     action = ndb.StringProperty('a', required=True)
 
+    def prepare_json(self):
+        params = polymodel.PolyModel.to_dict(self)
+        params["class_"] = params["class_"][-1]
+        return params
+
 
 class BinaryRestriction(Restriction):
     allow = ndb.BooleanProperty('b', default=False)
 
 
-class PerTimeResctriction(Restriction):
+class PerTimeRestriction(Restriction):
     limit_to = ndb.IntegerProperty('l', required=True)
     duration = ndb.StringProperty('d', required=True)
 
 
 class TotalAmountRestriction(Restriction):
-    max = ndb.IntegerProperty('m', required=True)
+    total_max = ndb.IntegerProperty('m', required=True)
 
 
 class AccountAmountRestriction(Restriction):
     account_item = ndb.StringProperty('i', required=True)
-    quantity_change = ndb.StringProperty('q', required=False, default=1)
+#    quantity_change = ndb.StringProperty('q', required=False, default=1)  ## ???
+
+RestrictionTypes = {
+    "BinaryRestriction": BinaryRestriction,
+    "PerTimeRestriction": PerTimeRestriction,
+    "TotalAmountRestriction": TotalAmountRestriction,
+    "AccountAmountRestriction": AccountAmountRestriction,
+}
 
 
 class Profile(ndb.Model):
@@ -130,6 +142,7 @@ class Profile(ndb.Model):
         prepped["id"] = self.key.id()
         prepped["created"] = date_json_format(prepped["created"])
         prepped["last_change"] = date_json_format(prepped["last_change"])
+        prepped["restrictions"] = [x.prepare_json() for x in self.restrictions]
         return prepped
 
     def _pre_put_hook(self):

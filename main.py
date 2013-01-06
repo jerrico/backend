@@ -2,7 +2,7 @@
 
 from utils import verified_api_request, as_json, understand_post, verify_user
 from google.appengine.ext import ndb
-from models import LogEntry, AppAccess, User, Device, Profile
+from models import LogEntry, AppAccess, User, Device, Profile, RestrictionTypes
 
 import webapp2
 import json
@@ -110,7 +110,7 @@ class Users(ModelRestApi):
 class Profiles(ModelRestApi):
     model_cls = Profile
     no_item_raise = True
-    writeable = ('name', 'default', 'allow_per_default', "restrictions")
+    writeable = ('name', 'default', 'allow_per_default')
 
     def _add_item(self, params):
         name = params.get("name")
@@ -119,6 +119,13 @@ class Profiles(ModelRestApi):
         model = self.model_cls(parent=self.app_access.key, name=name)
         model.put()
         return model.prepare_json()
+
+    def _decorate_params(self, params):
+        prepared_params = ModelRestApi._decorate_params(self, params)
+        prepared_params["restrictions"] = [
+                RestrictionTypes[rest.pop('class_')](**rest)
+                    for rest in params.get("restrictions", [])]
+        return prepared_params
 
     def _decorate_item_id(self, item_id):
         return int(item_id)
