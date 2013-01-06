@@ -159,8 +159,7 @@ var consoleApp = angular.module('console', ["console.services"]).
     var profile = Profile.get({profileID: $routeParams.profileID, '_key': app.key});
     $scope.profile = profile;
     appState.profile = profile;
-    console.log(profile);
-    $scope.saveModel = function save(){
+    $scope.saveModel = saveModel = function (){
       profile.$save({ '_key': app.key});
     };
     $scope.deleteRes = function(idx) {
