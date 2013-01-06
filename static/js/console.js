@@ -60,7 +60,6 @@ angular.module('console.services', ['ngResource', 'ui']).
             scope.$apply();
         });
         if (attrs.editableSaved) {
-          console.log(attrs.editableSaved);
           elm.on('save', function(){
             scope.$eval(attrs.editableSaved);
            });
