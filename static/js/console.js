@@ -1,6 +1,6 @@
 angular.module('console.services', ['ngResource', 'ui']).
   factory('App', function($resource){
-    return $resource('/api/v1/my_apps', {}, {
+    return $resource('/api/v1/my_apps/:appID', {appID: "@key"}, {
       get: {method:'GET', params: {"_raw": 1}, isArray:false},
       query: {method:'GET', params: {"_raw": 1}, isArray:true},
       save: {method:'POST', params: {"_raw": 1}, isArray:false}
@@ -111,9 +111,9 @@ var consoleApp = angular.module('console', ["console.services"]).
   config(function($routeProvider) {
      $routeProvider.
         when('/:appID/details', { controller: "AppDetailsCtrl",
-            templateUrl: "/static/tmpl/details.tmpl"}).
+            templateUrl: "/static/tmpl/app_details.tmpl"}).
         when('/:appID/dashboard', { controller: "DashboardCtrl",
-            templateUrl: "/static/tmpl/details.tmpl"}).
+            templateUrl: "/static/tmpl/dashboard.tmpl"}).
 
         when('/:appID/devices/:deviceID', { controller: "DeviceDetailsCtrl",
             templateUrl: "/static/tmpl/device_details.tmpl"}).
@@ -181,9 +181,10 @@ var consoleApp = angular.module('console', ["console.services"]).
   }).
   controller ("AppDetailsCtrl", function($scope, appState, $routeParams){
     var app = appState.findAndSelectApp($routeParams.appID);
-    $scope.name = app.name;
-    $scope.key = app.key;
-    $scope.secret = app.secret;
+    $scope.app = app;
+    $scope.saveModel = function() {
+      app.$save();
+    };
   }).
   controller ("AddRestrictionCtrl", function ($scope, $location, appState) {
     $scope.saveRestriction = function() {

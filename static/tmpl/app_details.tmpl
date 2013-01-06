@@ -1,0 +1,26 @@
+
+
+<div class="row">
+	<h3 class="span">App Details for <span editable editable-saved="saveModel()" ng-model="app.name"></span>&nbsp;<span ng-hide="app.active" class="badge badge-important">disabled</span></h3>
+
+		<div class="pull-right">
+		<a ng-show="app.active" ng-click="app.active = false;
+      saveModel();" class="btn btn-mini btn">Disable</a>&nbsp;
+		<a ng-hide="app.active" ng-click="app.active = true;
+      saveModel();" class="btn btn-mini btn">Enable</a>&nbsp;
+  	</div>
+</div>
+
+<div class="row">
+	<div class="span11 offset1">
+		<h4>Key and Secret</h4>
+
+		<div class="row">
+		    <div class="alert alert-warning span6 offset1">
+		      <p>Your App has the following key and secret:</p>
+		      <p><strong>key:</strong> {{app.key}}</p>
+		      <p><strong>secret:</strong> {{app.secret}}</p>
+		    </div>
+		</div>
+	</div>
+</div>

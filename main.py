@@ -13,8 +13,7 @@ class ModelRestApi(webapp2.RequestHandler):
     no_item_raise = False
     writeable = ()
 
-    @verified_api_request
-    def get(self, item_id=None):
+    def _get(self, item_id=None):
         # list service
         if not item_id:
             return [x.prepare_json() for x in self._get_query().fetch(100)]
@@ -28,9 +27,8 @@ class ModelRestApi(webapp2.RequestHandler):
             webapp2.abort(404, "Item not found")
         return item_data
 
-    @verified_api_request
     @understand_post
-    def post(self, params, item_id=None):
+    def _post(self, params, item_id=None):
         if item_id:
             model = self._get_item_key(item_id).get()
             if model:
@@ -57,7 +55,7 @@ class ModelRestApi(webapp2.RequestHandler):
         return self._decorate_query(self.model_cls.query(
                     ancestor=self.app_access.key))
 
-    def _decoreate_item_id(self, item_id):
+    def _decorate_item_id(self, item_id):
         return item_id
 
     def _decorate_query(self, query):
@@ -69,6 +67,10 @@ class ModelRestApi(webapp2.RequestHandler):
             if key in params:
                 res_params[key] = params[key]
         return res_params
+
+    ## make them accessible from the outside
+    get = verified_api_request(_get)
+    post = verified_api_request(_post)
 
 
 class Logger(ModelRestApi):
@@ -122,15 +124,12 @@ class Profiles(ModelRestApi):
         return int(item_id)
 
 
-class AppsManager(webapp2.RequestHandler):
+class AppsManager(ModelRestApi):
+    model_cls = AppAccess
+    no_item_raise = True
+    writeable = ('name', 'active')
 
-    def get(self):
-        return [x.prepare_json() for x in AppAccess.query()]
-
-    get = verified_api_request(get, without_key=True)
-
-    @understand_post
-    def post(self, params):
+    def _add_item(self, params):
         name = params.get("name", None)
         if not name:
             webapp2.abort(400, "No app name given")
@@ -138,7 +137,14 @@ class AppsManager(webapp2.RequestHandler):
         app.put()
         return app.prepare_json()
 
-    post = verified_api_request(post, without_key=True)
+    def _get_item_key(self, item_id):
+        return ndb.Key(urlsafe=item_id)
+
+    def _get_query(self):
+        return self._decorate_query(self.model_cls.query())
+
+    get = verified_api_request(ModelRestApi._get, without_key=True)
+    post = verified_api_request(ModelRestApi._post, without_key=True)
 
 
 class VerifyAccess(webapp2.RequestHandler):
@@ -160,5 +166,6 @@ app = webapp2.WSGIApplication([
     ('/api/v1/users', Users),
     ('/api/v1/devices/(.*?)', Devices),
     ('/api/v1/devices', Devices),
+    ('/api/v1/my_apps/(.*?)', AppsManager),
     ('/api/v1/my_apps', AppsManager)
 ], debug=True)
