@@ -76,20 +76,25 @@
             <ul class="nav" id="main-nav">
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                  Select App
+                  {{appState.selected_app.name}}&nbsp;<span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
                   <li ng-repeat="app in appState.apps"><a href="#/{{app.key}}/dashboard">{{app.name}}</a></li>
                   <li class="divider"></li>
                   <li><a data-toggle="modal" href="#addAppModal" ><i class="icon-plus"></i> Add App</a></li>
                 </ul>
-              </li>              
+              </li>
+              <li class="active"><a href="#/{{appState.selected_app.key}}/dashboard">Dashboard</a></li>
+              <li><a href="#/{{appState.selected_app.key}}/stats">Statistics</a></li>
+              <li><a href="#/{{appState.selected_app.key}}/devices"><i class="icon-print icon-white"></i> Devices</a></li>
+              <li><a href="#/{{appState.selected_app.key}}/users"><i class="icon-user icon-white"></i> Users</a></li>
+              <li><a href="#/{{appState.selected_app.key}}/logs"><i class="icon-th-list icon-white"></i> Raw Logs</a></li>             
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                  {{appState.selected_app.name}}&nbsp;<span class="caret"></span>
+                  <span class="icon-cog icon-white"></span>&nbsp;<span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
-                  <li class="dropdown-submenu">
+                  <li class="dropdown-submenu pull-left">
                     <a tabindex="-1" href="#"><i class="icon-home"></i> Profiles</a>
                       <ul class="dropdown-menu">
                         <li ng-repeat="profile in appState.profiles"><a ng-href="#/{{appState.selected_app.key}}/profiles/{{profile.id}}">{{profile.name}}</a></li>
@@ -98,19 +103,10 @@
                           </ul>
                   </li>
                   <li>
-                    <a href="#/{{appState.selected_app.key}}/settings"><i class="icon-cog"></i> Settings</a>
-                  </li>
-                  <li class="divider"></li>
-                  <li>
-                    <a href="#/{{appState.selected_app.key}}/details"><i class="icon-info-sign"></i> Info</a>
+                    <a href="#/{{appState.selected_app.key}}/details"><i class="icon-cog"></i> Settings</a>
                   </li>
                 </ul>
               </li>
-              <li class="active"><a href="#/{{appState.selected_app.key}}/dashboard">Dashboard</a></li>
-              <li><a href="#/{{appState.selected_app.key}}/stats">Statistics</a></li>
-              <li><a href="#/{{appState.selected_app.key}}/devices"><i class="icon-print icon-white"></i> Devices</a></li>
-              <li><a href="#/{{appState.selected_app.key}}/users"><i class="icon-user icon-white"></i> Users</a></li>
-              <li><a href="#/{{appState.selected_app.key}}/logs"><i class="icon-th-list icon-white"></i> Raw Logs</a></li>
             </ul>
           </div>
         </div>
