@@ -1,4 +1,5 @@
 from google.appengine.ext import ndb
+from google.appengine.ext.ndb import polymodel
 from datetime import datetime, timedelta
 from uuid import uuid4
 
@@ -90,11 +91,27 @@ class AppAccess(ndb.Model):
             }
 
 
-class Restriction(ndb.Model):
+class Restriction(polymodel.PolyModel):
     # this is not a real model as it is a Structured on Profile
     action = ndb.StringProperty('a', required=True)
-    limit_to = ndb.IntegerProperty('l', required=False)
-    duration = ndb.StringProperty('d', required=False)
+
+
+class BinaryRestriction(Restriction):
+    allow = ndb.BooleanProperty('b', default=False)
+
+
+class PerTimeResctriction(Restriction):
+    limit_to = ndb.IntegerProperty('l', required=True)
+    duration = ndb.StringProperty('d', required=True)
+
+
+class TotalAmountRestriction(Restriction):
+    max = ndb.IntegerProperty('m', required=True)
+
+
+class AccountAmountRestriction(Restriction):
+    account_item = ndb.StringProperty('i', required=True)
+    quantity_change = ndb.StringProperty('q', required=False, default=1)
 
 
 class Profile(ndb.Model):
@@ -105,7 +122,8 @@ class Profile(ndb.Model):
     default = ndb.BooleanProperty('d', default=False)
     allow_per_default = ndb.BooleanProperty('a', default=False)
     # following the restrictions
-    restrictions = ndb.StructuredProperty(Restriction, repeated=True)
+    restrictions = ndb.LocalStructuredProperty(Restriction, compressed=True,
+                repeated=True)
 
     def prepare_json(self):
         prepped = self.to_dict()
