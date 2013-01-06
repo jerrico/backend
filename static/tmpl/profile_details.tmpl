@@ -31,12 +31,11 @@
 		</thead>
 		<tbody>
 			<tr ng-repeat="rest in profile.restrictions">
-				<td>{{rest.action}}</td>
-				<td>{{rest.limit_to}}</td>
-				<td>{{rest.duration}}</td>
+				<td><span editable editable-saved="saveModel()" ng-model="profile.restrictions[$index].action"></span></td>
+				<td><span editable editable-saved="saveModel()" ng-model="profile.restrictions[$index].limit_to"></span></td>
+				<td><span editable="{emptytext: ''}" editable-saved="saveModel()" ng-model="profile.restrictions[$index].duration"></span></td>
 				<td>
 					<a ng-click="deleteRes($index)"><i class="icon-minus-sign"></i></a>
-					<a ng-click="editRes($index)"><i class="icon-edit"></i></a>
 					<a ng-hide="$first" ng-click="switchRes($index-1, $index)"><i class="icon-chevron-up"></i></a>
 					<a ng-hide="$last" ng-click="switchRes($index, $index+1)"><i class="icon-chevron-down"></i></a>
 				</td>
