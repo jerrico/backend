@@ -3,12 +3,31 @@
 <div class="row">
 	<h3 class="span">App Details for <span editable editable-saved="saveModel()" ng-model="app.name"></span>&nbsp;<span ng-hide="app.active" class="badge badge-important">disabled</span></h3>
 
-		<div class="pull-right">
+	<div class="pull-right">
 		<a ng-show="app.active" ng-click="app.active = false;
       saveModel();" class="btn btn-mini btn">Disable</a>&nbsp;
 		<a ng-hide="app.active" ng-click="app.active = true;
       saveModel();" class="btn btn-mini btn">Enable</a>&nbsp;
   	</div>
+</div>
+
+<div class="row">
+	<div class="span11 offset1">
+		<h4 class="span">Profiles</h4>
+		<div class="pull-right">
+			<a data-toggle="modal" href="#addProfileModal" class="btn"><i class="icon-plus"></i> Add Profile</a>
+	  	</div>
+	</div>
+</div>
+<div class="row">
+	<div class="span11 offset2">
+		<ul>
+			<li ng-repeat="profile in app.profiles">
+				<span ng-show="profile.default" class="badge">Default</span>&nbsp;<a href="#/{{app.key}}/profiles/{{profile.id}}">{{profile.name}}</a>
+				&nbsp;<span ng-show="profile.allow_per_default" class="badge badge-success">allow per default</span>
+			</li>
+		</ul>
+	</div>
 </div>
 
 <div class="row">
