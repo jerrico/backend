@@ -114,6 +114,8 @@ var consoleApp = angular.module('console', ["console.services"]).
             templateUrl: "/static/tmpl/app_details.tmpl"}).
         when('/:appID/dashboard', { controller: "DashboardCtrl",
             templateUrl: "/static/tmpl/dashboard.tmpl"}).
+        when('/:appID/stats', { controller: "StatsCtrl",
+            templateUrl: "/static/tmpl/stats.tmpl"}).
 
         when('/:appID/devices/:deviceID', { controller: "DeviceDetailsCtrl",
             templateUrl: "/static/tmpl/device_details.tmpl"}).
@@ -147,11 +149,13 @@ var consoleApp = angular.module('console', ["console.services"]).
     var app = appState.findAndSelectApp($routeParams.appID);
     $scope.list = model.query({'_key': app.key});
   }).
+  controller ("StatsCtrl", function($scope, appState, $routeParams){
+    var app = appState.findAndSelectApp($routeParams.appID);
+    $scope.app = app;
+  }).
   controller ("DashboardCtrl", function($scope, appState, $routeParams){
     var app = appState.findAndSelectApp($routeParams.appID);
-    $scope.name = app.name;
-    $scope.key = app.key;
-    $scope.secret = app.secret;
+    $scope.app = app;
   }).
   controller ("ProfileDetailsCtrl", function($scope, appState, Profile, LogEntry, $routeParams){
     var app = appState.findAndSelectApp($routeParams.appID);
