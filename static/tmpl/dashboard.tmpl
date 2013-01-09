@@ -2,3 +2,15 @@
 <div class="row">
 	<h3 class="span">Dashboard</h3>
 </div>
+
+<div class="row">
+	<div class="span4">
+		<h4>Profiles</h4>
+		<ul>
+			<li ng-repeat="profile in app.profiles">
+				<span ng-show="profile.default" class="badge">Default</span>&nbsp;<a href="#/{{app.key}}/profiles/{{profile.id}}">{{profile.name}}</a>
+				&nbsp;<span ng-show="profile.allow_per_default" class="badge badge-success">allow per default</span>
+			</li>
+		</ul>
+	</div>
+</div>
