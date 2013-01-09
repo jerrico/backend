@@ -61,7 +61,7 @@
           <div class="modal-body">
 
             <p><label>Action:</label><input type="text" required="required" class="span3" ng-model="params.action" placeholder="Action name">
-              <select ng-model="params.class_">
+              <select name="class_" ng-model="params.class_">
                 <option value="">Select </option>
                 <option value="BinaryRestriction">Binary allow/disallow</option>
                 <option value="PerTimeResctriction">Times During Period</option>
@@ -69,15 +69,15 @@
                 <option value="TotalAmountRestriction">Total Amount</option>
               </select>
             </p>
-            <p ui-if="params.class_=='BinaryRestriction'">
-              <button class="span3" ng-click="params.allow=false; return false;">
-                <span ui-if="params.allowed">Access Denied</span>
-                <span ui-if="!params.allowed">Access Granted</span>
+            <p ng-show="params.class_=='BinaryRestriction'">
+              <button class="span3" ng-click="params.allow=!params.allow">
+                <span ng-show="params.allow">Access Denied</span>
+                <span ng-show="!params.allow">Access Granted</span>
               </button>
             </p>
-            <p ui-if="params.class_=='PerTimeResctriction'">
-              limit to <input type="number" class="span1" ng-model="params.limit_to" placeholder="x" /> times per
-              <select ng-model="params.duration">
+            <p ng-show="params.class_=='PerTimeRestriction'">
+              limit to <input name="limit" type="number" class="span1" ng-model="params.limit_to" placeholder="x" /> times per
+              <select name="duration" ng-model="params.duration">
                 <option value="1">second </option>
                 <option value="60">minute</option>
                 <option value="1800">half an hour</option>
@@ -87,7 +87,7 @@
                 <option value="28800">8 hours</option>
                 <option value="43200">12 hours</option>
                 <option value="86400">24 hours</option>
-                <option value="86401">day</option>
+                <option selected="selected" value="86401">day</option>
                 <option value="172800">2 days</option> 
                 <option value="432000">5 days</option> 
                 <option value="604800">7 days</option> 
@@ -97,17 +97,17 @@
                 <option value="30758401">year</option> 
               </select>
             </p>
-            <p ui-if="params.class_=='AccountRestriction'">
+            <p ng-show="params.class_=='AccountRestriction'">
               <label>Name of value in account:</label>
-              <input type="text" required="required" ng-model="params.account_item">
+              <input name="account_item" type="text" ;ng-model="params.account_item">
             </p>
-            <p ui-if="params.class_=='TotalAmountRestriction'">
+            <p ng-show="params.class_=='TotalAmountRestriction'">
               <label>Total Maximum</label>
-              <input type="number" ng-model="params.total_max">
+              <input name="total_max" type="number" ng-model="params.total_max">
             </p>
           </div>
           <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Add Restriction</button>
+            <button class="btn btn-primary" ng-click="saveRestriction()">Add Restriction</button>
           </div>
         </form>
       </div>
