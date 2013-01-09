@@ -44,6 +44,18 @@ angular.module('console.services', ['ngResource', 'ui']).
           scope.dismiss = function() {
             $(element).modal("hide");
           };
+          $(element).on("show", function(){
+            scope.$emit("modalShow", arguments);
+          });
+          $(element).on("shown", function(){
+            scope.$emit("modalShown", arguments);
+          });
+          $(element).on("hide", function(){
+            scope.$emit("modalHide", arguments);
+          });
+          $(element).on("hidden", function(){
+            scope.$emit("modalHidden", arguments);
+          });
         }
       };
   }).
@@ -157,13 +169,18 @@ var consoleApp = angular.module('console', ["console.services"]).
     var app = appState.findAndSelectApp($routeParams.appID);
     $scope.app = app;
   }).
-  controller ("ProfileDetailsCtrl", function($scope, appState, Profile, LogEntry, $routeParams){
+  controller ("ProfileDetailsCtrl", function($scope, appState, $rootScope, Profile, LogEntry, $routeParams){
     var app = appState.findAndSelectApp($routeParams.appID);
     var profile = Profile.get({profileID: $routeParams.profileID, '_key': app.key});
     $scope.profile = profile;
     appState.profile = profile;
     $scope.saveModel = saveModel = function (){
       profile.$save({ '_key': app.key});
+    };
+    $scope.editRestriction = function(idx) {
+      $rootScope.$broadcast("editRestriction", {idx: idx,
+          restriction: appState.profile.restrictions[idx]
+      });
     };
     $scope.deleteRes = function(idx) {
       profile.restrictions.splice(idx, 1);
@@ -192,8 +209,39 @@ var consoleApp = angular.module('console', ["console.services"]).
   }).
   controller ("AddRestrictionCtrl", function ($scope, $location, appState) {
     $scope.params = {};
+    $scope.$on("editRestriction", function(key, val) {
+      $scope.idx = val.idx + 1; // prevent == 0
+      angular.copy(val.restriction, $scope.params);
+      $scope.show();
+    });
+    $scope.$on("modalHidden", function(){
+      $scope.params = {};
+      $scope.idx = false;
+    });
+
+    function get_params(params){
+      var taking = {
+        'BinaryRestriction': ['allow'],
+        'PerTimeRestriction': ['limit_to', 'duration'],
+        'AccountAmountRestriction': ['account_item'],
+        'TotalAmountRestriction' : ['total_max']
+      },
+      res = {
+        "class_": params.class_,
+        "action": params.action
+      };
+      angular.forEach(taking[params.class_], function(name) {
+        res[name] = params[name];
+      });
+      return res;
+    }
+
     $scope.saveRestriction = function() {
-      appState.profile.restrictions.push($scope.params);
+      if ($scope.idx) {
+        appState.profile.restrictions[$scope.idx -1] = get_params($scope.params);
+      } else {
+        appState.profile.restrictions.push(get_params($scope.params));
+      }
       $scope.params = {};
       appState.profile.$save({ '_key': appState.selected_app.key});
       $scope.dismiss();

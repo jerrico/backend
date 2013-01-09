@@ -55,17 +55,17 @@
       <div class="modal fade hide" tw-modal="true" id="addRestrictionModal" ng-controller="AddRestrictionCtrl">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">x</button>
-          <h3>Add Restriction</h3>
+          <h3><span ng-show="idx">Edit</span><span ng-hide="idx">Add</span> Restriction</h3>
         </div>
-        <form method="post" action='' name="login_form" ng-submit="saveRestriction()" >
+        <form method="post" action='' name="restriction_edit_form">
           <div class="modal-body">
 
             <p><label>Action:</label><input type="text" required="required" class="span3" ng-model="params.action" placeholder="Action name">
-              <select name="class_" ng-model="params.class_">
+              <select ng-model="params.class_" required="required">
                 <option value="">Select </option>
                 <option value="BinaryRestriction">Binary allow/disallow</option>
-                <option value="PerTimeResctriction">Times During Period</option>
-                <option value="AccountRestriction">Account Amount</option>
+                <option value="PerTimeRestriction">Times During Period</option>
+                <option value="AccountAmountRestriction">Account Amount</option>
                 <option value="TotalAmountRestriction">Total Amount</option>
               </select>
             </p>
@@ -76,8 +76,8 @@
               </button>
             </p>
             <p ng-show="params.class_=='PerTimeRestriction'">
-              limit to <input name="limit" type="number" class="span1" ng-model="params.limit_to" placeholder="x" /> times per
-              <select name="duration" ng-model="params.duration">
+              limit to <input name="limit" type="number" class="span1" ng-model="params.limit_to" placeholder="x" ng-required="params.class_=='PerTimeRestriction'" min="0" /> times per
+              <select name="duration" ng-required="params.class_=='PerTimeRestriction'" ng-model="params.duration">
                 <option value="1">second </option>
                 <option value="60">minute</option>
                 <option value="1800">half an hour</option>
@@ -97,17 +97,17 @@
                 <option value="30758401">year</option> 
               </select>
             </p>
-            <p ng-show="params.class_=='AccountRestriction'">
+            <p ng-show="params.class_=='AccountAmountRestriction'">
               <label>Name of value in account:</label>
-              <input name="account_item" type="text" ;ng-model="params.account_item">
+              <input name="account_item" ng-required="params.class_=='AccountAmountRestriction'" type="text" ng-model="params.account_item">
             </p>
             <p ng-show="params.class_=='TotalAmountRestriction'">
               <label>Total Maximum</label>
-              <input name="total_max" type="number" ng-model="params.total_max">
+              <input name="total_max" type="number" ng-required="params.class_=='TotalAmountRestriction'" ng-model="params.total_max">
             </p>
           </div>
           <div class="modal-footer">
-            <button class="btn btn-primary" ng-click="saveRestriction()">Add Restriction</button>
+            <button class="btn btn-primary" ng-disabled="restriction_edit_form.$invalid" type="submit" ng-click="saveRestriction()"><span ng-show="idx">Save</span><span ng-hide="idx">Add</span> Restriction</button>
           </div>
         </form>
       </div>
@@ -183,7 +183,8 @@
         <script src="/static/js/vendor/backbone-min.js"></script>
         <script src="/static/js/vendor/base64.js"></script>
         -->
-        <script src="/static/js/vendor/angular.min.js"></script>
+        <!-- <script src="/static/js/vendor/angular.min.js"></script> -->
+        <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.js"></script>
         <script src="/static/js/vendor/angular-resource.min.js"></script>
         <script src="/static/js/vendor/angular-ui.min.js"></script>
         <script src="/static/js/vendor/bootstrap-editable-inline.min.js"></script>
