@@ -61,7 +61,7 @@
           <div class="modal-body">
 
             <p><label>Action:</label><input type="text" required="required" class="span3" ng-model="params.action" placeholder="Action name">
-              <select ui-select2 ng-model="params.class_">
+              <select ng-model="params.class_">
                 <option value="">Select </option>
                 <option value="BinaryRestriction">Binary allow/disallow</option>
                 <option value="PerTimeResctriction">Times During Period</option>
@@ -77,7 +77,7 @@
             </p>
             <p ui-if="params.class_=='PerTimeResctriction'">
               limit to <input type="number" class="span1" ng-model="params.limit_to" placeholder="x" /> times per
-              <select ui-select2 ng-model="params.duration">
+              <select ng-model="params.duration">
                 <option value="1">second </option>
                 <option value="60">minute</option>
                 <option value="1800">half an hour</option>
