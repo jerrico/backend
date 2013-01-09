@@ -24,17 +24,22 @@
 		<thead>
 			<tr>
 				<th>Action</th>
-				<th>Limitation</th>
-				<th>During</th>
+				<th>Type</th>
+				<th>Settings</th>
 				<th>&nbsp;</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr ng-repeat="rest in profile.restrictions">
-				<td><span editable editable-saved="saveModel()" ng-model="profile.restrictions[$index].action"></span></td>
-				<td><span editable editable-saved="saveModel()" ng-model="profile.restrictions[$index].limit_to"></span></td>
-				<td><span editable="{emptytext: ''}" editable-saved="saveModel()" ng-model="profile.restrictions[$index].duration"></span></td>
+				<td>{{rest.action}}</td>
+				<td>{{rest.class_}}</td>
 				<td>
+					<span ng-repeat="attr in ['allow', 'limit_to', 'duration', 'total_max', 'account_item']">
+						<span ui-if="rest.hasOwnProperty(attr)">{{attr}}: {{rest[attr]}}</span>
+					</span>
+				</td>
+				<td>
+					<a ng-click="editRestriction($index)"><i class="icon-edit"></i></a>
 					<a ng-click="deleteRes($index)"><i class="icon-minus-sign"></i></a>
 					<a ng-hide="$first" ng-click="switchRes($index-1, $index)"><i class="icon-chevron-up"></i></a>
 					<a ng-hide="$last" ng-click="switchRes($index, $index+1)"><i class="icon-chevron-down"></i></a>
