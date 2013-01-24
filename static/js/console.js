@@ -1,3 +1,4 @@
+
 angular.module('console.services', ['ngResource', 'ui']).
   factory('App', function($resource){
     return $resource('/api/v1/my_apps/:appID', {appID: "@key"}, {
@@ -36,24 +37,25 @@ angular.module('console.services', ['ngResource', 'ui']).
   }).
   directive('twModal', function() {
     return {
-      scope: true,
       link: function(scope, element, attr, ctrl) {
+          var $el = $(element);
+          $el.modal("hide");
           scope.show = function() {
-            $(element).modal("show");
+            $el.modal("show");
           };
           scope.dismiss = function() {
-            $(element).modal("hide");
+            $el.modal("hide");
           };
-          $(element).on("show", function(){
+          $el.on("show", function(){
             scope.$emit("modalShow", arguments);
           });
-          $(element).on("shown", function(){
+          $el.on("shown", function(){
             scope.$emit("modalShown", arguments);
           });
-          $(element).on("hide", function(){
+          $el.on("hide", function(){
             scope.$emit("modalHide", arguments);
           });
-          $(element).on("hidden", function(){
+          $el.on("hidden", function(){
             scope.$emit("modalHidden", arguments);
           });
         }
