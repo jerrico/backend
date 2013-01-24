@@ -1,4 +1,66 @@
 
+
+      <div class="modal fade hide" tw-modal="true" id="addRestrictionModal" ng-controller="AddRestrictionCtrl">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">x</button>
+          <h3><span ng-show="idx">Edit</span><span ng-hide="idx">Add</span> Restriction</h3>
+        </div>
+        <form method="post" action='' name="restriction_edit_form">
+          <div class="modal-body">
+
+            <p><label>Action:</label><input type="text" required="required" class="span3" ng-model="params.action" placeholder="Action name">
+              <select ng-model="params.class_" required="required">
+                <option value="">Select </option>
+                <option value="BinaryRestriction">Binary allow/disallow</option>
+                <option value="PerTimeRestriction">Times During Period</option>
+                <option value="AccountAmountRestriction">Account Amount</option>
+                <option value="TotalAmountRestriction">Total Amount</option>
+              </select>
+            </p>
+            <p ng-show="params.class_=='BinaryRestriction'">
+              <button class="span3" ng-click="params.allow=!params.allow">
+                <span ng-show="params.allow">Access Denied</span>
+                <span ng-show="!params.allow">Access Granted</span>
+              </button>
+            </p>
+            <p ng-show="params.class_=='PerTimeRestriction'">
+              limit to <input name="limit" type="number" class="span1" ng-model="params.limit_to" placeholder="x" ng-required="params.class_=='PerTimeRestriction'" min="0" /> times per
+              <select name="duration" ng-required="params.class_=='PerTimeRestriction'" ng-model="params.duration">
+                <option value="1">second </option>
+                <option value="60">minute</option>
+                <option value="1800">half an hour</option>
+                <option value="3600">hour</option>
+                <option value="7200">2 hours</option>
+                <option value="14400">4 hours</option>
+                <option value="28800">8 hours</option>
+                <option value="43200">12 hours</option>
+                <option value="86400">24 hours</option>
+                <option selected="selected" value="86401">day</option>
+                <option value="172800">2 days</option> 
+                <option value="432000">5 days</option> 
+                <option value="604800">7 days</option> 
+                <option value="604801">week</option>  
+                <option value="1209600">2 weeks</option> 
+                <option value="2419200">4 weeks</option> 
+                <option value="30758401">year</option> 
+              </select>
+            </p>
+            <p ng-show="params.class_=='AccountAmountRestriction'">
+              <label>Name of value in account:</label>
+              <input name="account_item" ng-required="params.class_=='AccountAmountRestriction'" type="text" ng-model="params.account_item">
+            </p>
+            <p ng-show="params.class_=='TotalAmountRestriction'">
+              <label>Total Maximum</label>
+              <input name="total_max" type="number" ng-required="params.class_=='TotalAmountRestriction'" ng-model="params.total_max">
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-primary" ng-disabled="restriction_edit_form.$invalid" type="submit" ng-click="saveRestriction()"><span ng-show="idx">Save</span><span ng-hide="idx">Add</span> Restriction</button>
+          </div>
+        </form>
+      </div>
+      
+
 <div class="row">
 	<h2 class="span">Profile: <span editable editable-saved="saveModel()" ng-model="profile.name"></span>&nbsp;<span ng-show="profile.default" class="badge">default</span><span ng-show="profile.allow_per_default" class="badge badge-success">allow per default</span>
 	</h2>
