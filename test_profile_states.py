@@ -3,7 +3,8 @@ import ndb_tests
 from datetime import datetime, timedelta
 
 from models import (LogEntry, AppAccess, User, Device,
-        Profile, Restriction)
+        Profile, BinaryRestriction, TotalAmountRestriction,
+        PerTimeRestriction)
 
 
 class SimpleProfilerTest(ndb_tests.NDBTest):
@@ -13,23 +14,23 @@ class SimpleProfilerTest(ndb_tests.NDBTest):
         free = Profile(parent=app, name="free", default=True,
             restrictions=[
                 # unlimited:
-                Restriction(action="take_photo"),
+                BinaryRestriction(action="take_photo", allow=True),
                 # simple:
-                Restriction(action="upload_photo",
-                            limit_to=10, duration="a day"),
+                PerTimeRestriction(action="upload_photo",
+                            limit_to=10, duration=24 * 60 * 60),
                 # double restriction:
-                Restriction(action="share_photo",
-                            limit_to=10, duration="a day"),
-                Restriction(action="share_photo",
-                            limit_to=20, duration="a week"),
+                PerTimeRestriction(action="share_photo",
+                            limit_to=10, duration=24 * 60 * 60),
+                PerTimeRestriction(action="share_photo",
+                            limit_to=20, duration=7 * 24 * 60 * 60),
             ]).put()
         premium = Profile(parent=app, name="premium", allow_per_default=True,
             restrictions=[
                 # simple:
-                Restriction(action="upload_photo",
-                            limit_to=100, duration="a day"),
+                PerTimeRestriction(action="upload_photo",
+                            limit_to=100, duration=24 * 60 * 60),
                 # endless restriction:
-                Restriction(action="quota", limit_to=1000),
+                TotalAmountRestriction(action="quota", total_max=1000),
             ]).put()
         User(id="free_u", parent=app, assigned_profile=free).put()
         User(id="prem", parent=app, assigned_profile=premium).put()
@@ -49,9 +50,10 @@ class SimpleProfilerTest(ndb_tests.NDBTest):
         self.assertEquals(profile_state["profile"], "free")
         self.assertEquals(profile_state["default"], "deny")
         self.assertEquals(len(profile_state["states"]), 3)
-        self.assertEquals(profile_state["states"]["take_photo"], [True])
+        self.assertEquals(len(profile_state["states"]["take_photo"]), 1)
+        self.assertTrue(profile_state["states"]["take_photo"][0]["allow"])
         self.assertEquals(profile_state["states"]["upload_photo"][0]["left"], 10)
-        self.assertEquals(profile_state["states"]["upload_photo"][0]["max"], 10)
+        self.assertEquals(profile_state["states"]["upload_photo"][0]["limit_to"], 10)
 
     def test_with_simple_counter(self):
         self._load_simple()
@@ -63,7 +65,7 @@ class SimpleProfilerTest(ndb_tests.NDBTest):
         self.assertEquals(profile_state["default"], "deny")
         self.assertEquals(len(profile_state["states"]), 3)
         self.assertEquals(profile_state["states"]["upload_photo"][0]["left"], 9)
-        self.assertEquals(profile_state["states"]["upload_photo"][0]["max"], 10)
+        self.assertEquals(profile_state["states"]["upload_photo"][0]["limit_to"], 10)
 
         LogEntry.make(self.app_access.key, "free_u", None,
                     action="upload_photo").put()
@@ -73,7 +75,7 @@ class SimpleProfilerTest(ndb_tests.NDBTest):
         self.assertEquals(profile_state["default"], "deny")
         self.assertEquals(len(profile_state["states"]), 3)
         self.assertEquals(profile_state["states"]["upload_photo"][0]["left"], 8)
-        self.assertEquals(profile_state["states"]["upload_photo"][0]["max"], 10)
+        self.assertEquals(profile_state["states"]["upload_photo"][0]["limit_to"], 10)
 
         # other action
         LogEntry.make(self.app_access.key, "free_u", None,
@@ -84,7 +86,7 @@ class SimpleProfilerTest(ndb_tests.NDBTest):
         self.assertEquals(profile_state["default"], "deny")
         self.assertEquals(len(profile_state["states"]), 3)
         self.assertEquals(profile_state["states"]["upload_photo"][0]["left"], 8)
-        self.assertEquals(profile_state["states"]["upload_photo"][0]["max"], 10)
+        self.assertEquals(profile_state["states"]["upload_photo"][0]["limit_to"], 10)
 
     def test_with_outer_user_counter(self):
         self._load_simple()
@@ -99,7 +101,7 @@ class SimpleProfilerTest(ndb_tests.NDBTest):
         self.assertEquals(profile_state["default"], "deny")
         self.assertEquals(len(profile_state["states"]), 3)
         self.assertEquals(profile_state["states"]["upload_photo"][0]["left"], 9)
-        self.assertEquals(profile_state["states"]["upload_photo"][0]["max"], 10)
+        self.assertEquals(profile_state["states"]["upload_photo"][0]["limit_to"], 10)
 
     def test_with_yesterday_counter(self):
         self._load_simple()
@@ -115,7 +117,7 @@ class SimpleProfilerTest(ndb_tests.NDBTest):
         self.assertEquals(profile_state["default"], "deny")
         self.assertEquals(len(profile_state["states"]), 3)
         self.assertEquals(profile_state["states"]["upload_photo"][0]["left"], 9)
-        self.assertEquals(profile_state["states"]["upload_photo"][0]["max"], 10)
+        self.assertEquals(profile_state["states"]["upload_photo"][0]["limit_to"], 10)
 
     def test_with_week_counter(self):
         self._load_simple()
@@ -141,9 +143,9 @@ class SimpleProfilerTest(ndb_tests.NDBTest):
         self.assertEquals(profile_state["default"], "deny")
         self.assertEquals(len(profile_state["states"]), 3)
         self.assertEquals(profile_state["states"]["share_photo"][0]["left"], 9)
-        self.assertEquals(profile_state["states"]["share_photo"][0]["max"], 10)
+        self.assertEquals(profile_state["states"]["share_photo"][0]["limit_to"], 10)
         self.assertEquals(profile_state["states"]["share_photo"][1]["left"], 16)
-        self.assertEquals(profile_state["states"]["share_photo"][1]["max"], 20)
+        self.assertEquals(profile_state["states"]["share_photo"][1]["limit_to"], 20)
 
 
     def test_with_endless_counter(self):
@@ -162,7 +164,7 @@ class SimpleProfilerTest(ndb_tests.NDBTest):
         self.assertEquals(profile_state["default"], "allow")
         self.assertEquals(len(profile_state["states"]), 2)
         self.assertEquals(profile_state["states"]["quota"][0]["left"], 949)
-        self.assertEquals(profile_state["states"]["quota"][0]["max"], 1000)
+        self.assertEquals(profile_state["states"]["quota"][0]["total_max"], 1000)
 
 
     def test_no_user_nor_device(self):

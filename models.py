@@ -63,26 +63,10 @@ class AppAccess(ndb.Model):
 
         states = {}
         for res in profile.restrictions:
-            my_query = query.filter(LogEntry.action == res.action)
-            if res.limit_to is not None:
-                limitation = {}
-                limitation["max"] = res.limit_to
-                if res.duration is not None:
-                    limitation["during"] = duration = res.duration
-                    if duration == "a day":
-                        delta = timedelta(days=1)
-                    elif duration == "a week":
-                        delta = timedelta(days=7)
-
-                    my_query = my_query.filter(LogEntry.when > \
-                                    (datetime.now() - delta))
-                limitation["left"] = res.limit_to - my_query.count()
-            else:
-                limitation = True
             try:
-                states[res.action].append(limitation)
+                states[res.action].append(res.compile_limitation(query))
             except KeyError:
-                states[res.action] = [limitation]
+                states[res.action] = [res.compile_limitation(query)]
 
         return {
             "profile": profile.name,
@@ -100,6 +84,9 @@ class Restriction(polymodel.PolyModel):
         params["class_"] = params["class_"][-1]
         return params
 
+    def compile_limitation(self, query):
+        return self.prepare_json()
+
 
 class BinaryRestriction(Restriction):
     allow = ndb.BooleanProperty('b', default=False)
@@ -107,12 +94,24 @@ class BinaryRestriction(Restriction):
 
 class PerTimeRestriction(Restriction):
     limit_to = ndb.IntegerProperty('l', required=True)
-    duration = ndb.StringProperty('d', required=True)
+    duration = ndb.IntegerProperty('d', required=True)
+
+    def compile_limitation(self, query):
+        limitation = Restriction.compile_limitation(self, query)
+        query = query.filter(LogEntry.action == self.action,
+                    LogEntry.when > (datetime.now() - timedelta(seconds=self.duration)))
+        limitation["left"] = self.limit_to - query.count()
+        return limitation
 
 
 class TotalAmountRestriction(Restriction):
     total_max = ndb.IntegerProperty('m', required=True)
 
+    def compile_limitation(self, query):
+        limitation = Restriction.compile_limitation(self, query)
+        query = query.filter(LogEntry.action == self.action)
+        limitation["left"] = self.total_max - query.count()
+        return limitation
 
 class AccountAmountRestriction(Restriction):
     account_item = ndb.StringProperty('i', required=True)
@@ -149,7 +148,7 @@ class Profile(ndb.Model):
         if self.default:
             cur_default = Profile.query(Profile.default == True,
                         ancestor=self.key.parent()).get()
-            if cur_default != self:
+            if cur_default and cur_default != self:
                 cur_default.default = False
                 cur_default.put()
 
