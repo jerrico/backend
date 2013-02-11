@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from utils import verified_api_request, as_json, understand_post, verify_user
+from utils import verified_api_request, understand_post
 from google.appengine.ext import ndb
 from models import LogEntry, AppAccess, User, Device, Profile, RestrictionTypes
 
