@@ -94,6 +94,7 @@ angular.module('console.services', ['ngResource', 'ui']).
 
     self.addApp = function(app) {
       self.apps.push(app);
+      self.selectApp(app);
     };
 
     self.findApp = function(appId) {
@@ -115,7 +116,12 @@ angular.module('console.services', ['ngResource', 'ui']).
 
     self.apps = App.query(function() {
       // preselect first
-      self.selectApp(self.apps[0]);
+      if (self.apps.length === 0){
+        $rootScope.$broadcast("show-add-app");
+        console.log("yes");
+      } else {
+        self.selectApp(self.apps[0]);
+      }
     });
 
     $rootScope.appState = self;
@@ -150,7 +156,7 @@ var consoleApp = angular.module('console', ["console.services"]).
         when('/:appID/profiles', { controller: "ListCtrl",
             templateUrl: "/static/tmpl/profiles.tmpl", resolve: {
                 model: "Profile"}}).
-//       when('/', {controller:MainCtrl, templateUrl:'main.html'}).
+//       when('/', {controller: "MainCtrl", templateUrl:'main.html'}).
 // //      when('/edit/:projectId', {controller:EditCtrl, templateUrl:'detail.html'}).
 // //      when('/new', {controller:CreateCtrl, templateUrl:'detail.html'}).
       otherwise({redirectTo:'/'});
@@ -280,4 +286,7 @@ var consoleApp = angular.module('console', ["console.services"]).
         $location.path("/" +  newApp.key + "details/");
       });
     };
+    $scope.$on("show-add-app", function() {
+      $scope.show();
+    });
   });
