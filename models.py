@@ -38,6 +38,8 @@ class AppAccess(ndb.Model):
         profile_key = None
         user_key = None
         device_key = None
+        user = None
+        device = None
         if user_id:
             user_key = ndb.Key(User, user_id, parent=self.key)
             user = user_key.get()
@@ -55,11 +57,13 @@ class AppAccess(ndb.Model):
                 raise NoDefaultDefined()  # FIXME: we do not have any default here
 
             if user_id:
-                User(id=user_id, parent=self.key,
-                        assigned_profile=profile.key).put()
+                user = User(id=user_id, parent=self.key,
+                        assigned_profile=profile.key)
+                user.put()
             if device_id:
-                Device(id=device_id, parent=self.key,
-                        assigned_profile=profile.key).put()
+                device = Device(id=device_id, parent=self.key,
+                        assigned_profile=profile.key)
+                device.put()
         else:
             profile = profile_key.get()
 
@@ -79,7 +83,8 @@ class AppAccess(ndb.Model):
         return {
             "profile": profile.name,
             "default": profile.allow_per_default and "allow" or "deny",
-            "states": states
+            "states": states,
+            "account": user and user.prepare_json() or device.prepare_json()
             }
 
 
@@ -166,11 +171,15 @@ class User(ndb.Expando):
     # key = parent=>AppAccess; ID given by app
     assigned_profile = ndb.KeyProperty('p', kind=Profile, required=False)
 
+    prepare_json = ndb.Expando.to_dict
+
 
 # for Device Info
 class Device(ndb.Expando):
     # key = parent=>AppAccess; Device-ID given
     assigned_profile = ndb.KeyProperty('p', kind=Profile, required=False)
+
+    prepare_json = ndb.Expando.to_dict
 
 
 class LogEntry(ndb.Model):
