@@ -7,8 +7,8 @@ import binascii
 import requests
 import json
 
-KEY = "ahFkZXZ-amVycnktc2VydmljZXIPCxIJQXBwQWNjZXNzGAEM"
-SECRET = "ff8337a69085457791fa9666d3774707"
+KEY = " ahFkZXZ-amVycnktc2VydmljZXIPCxIJQXBwQWNjZXNzGAEM"
+SECRET = "b9ff1467f31746fab63e2f8ba4d79059"
 BASE_PATH = "/api/v1/"
 BASE_URL = "http://localhost:9092" + BASE_PATH
 
@@ -32,6 +32,15 @@ def verify_access():
     print req.read()
     return req
 
+def get_permission_state():
+    params = {"device_id": "web", "user_id": None}
+
+    url = BASE_URL + "permission_state"
+    full_request = url + "?" + _sign("GET", url, params)
+    print full_request
+    req = urllib2.urlopen(full_request)
+    print req.read()
+    return req
 
 def post_log_entry():
 
@@ -54,4 +63,5 @@ def post_log_entry():
 
 if __name__ == "__main__":
     verify_access()
+    get_permission_state()
     post_log_entry()

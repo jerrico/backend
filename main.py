@@ -164,8 +164,19 @@ class VerifyAccess(webapp2.RequestHandler):
     def post(self):
         return {"access": "granted"}
 
+
+class GetPermissionsState(webapp2.RequestHandler):
+
+    @verified_api_request
+    def get(self):
+        return self.app_access.compile_profile_state(
+                user_id=self.request.GET.get("user_id"),
+                device_id=self.request.GET.get("device_id"))
+
+
 app = webapp2.WSGIApplication([
     ('/api/v1/verify_access', VerifyAccess),
+    ('/api/v1/permission_state', GetPermissionsState),
     ('/api/v1/logs', Logger),
     ('/api/v1/profiles/(\d*?)', Profiles),
     ('/api/v1/profiles', Profiles),
