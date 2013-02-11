@@ -231,7 +231,7 @@ var consoleApp = angular.module('console', ["console.services"]).
       var taking = {
         'BinaryRestriction': ['allow'],
         'PerTimeRestriction': ['limit_to', 'duration'],
-        'AccountAmountRestriction': ['account_item'],
+        'AccountAmountRestriction': ['account_item', 'quantity_change'],
         'TotalAmountRestriction' : ['total_max']
       },
       res = {

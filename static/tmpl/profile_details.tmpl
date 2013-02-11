@@ -48,6 +48,8 @@
             <p ng-show="params.class_=='AccountAmountRestriction'">
               <label>Name of value in account:</label>
               <input name="account_item" ng-required="params.class_=='AccountAmountRestriction'" type="text" ng-model="params.account_item">
+              <label>Change in Quantity:</label>
+              <input name="quantity_change" ng-required="params.class_=='AccountAmountRestriction'" type="number" min="1" ng-model="params.quantity_change">
             </p>
             <p ng-show="params.class_=='TotalAmountRestriction'">
               <label>Total Maximum</label>
@@ -96,7 +98,7 @@
 				<td>{{rest.action}}</td>
 				<td>{{rest.class_}}</td>
 				<td>
-					<span ng-repeat="attr in ['allow', 'limit_to', 'duration', 'total_max', 'account_item']">
+					<span ng-repeat="attr in ['allow', 'limit_to', 'duration', 'total_max', 'account_item', 'quantity_change']">
 						<span ui-if="rest.hasOwnProperty(attr)">{{attr}}: {{rest[attr]}}</span>
 					</span>
 				</td>

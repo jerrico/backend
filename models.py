@@ -126,9 +126,10 @@ class TotalAmountRestriction(Restriction):
         limitation["left"] = self.total_max - query.count()
         return limitation
 
+
 class AccountAmountRestriction(Restriction):
     account_item = ndb.StringProperty('i', required=True)
-#    quantity_change = ndb.StringProperty('q', required=False, default=1)  ## ???
+    quantity_change = ndb.IntegerProperty('q', required=False, default=1)
 
 RestrictionTypes = {
     "BinaryRestriction": BinaryRestriction,
