@@ -8,6 +8,14 @@ def date_json_format(dtm):
     return dtm.ctime()
 
 
+class SetupIncomplete(Exception):
+    pass
+
+
+class NoDefaultDefined(SetupIncomplete):
+    pass
+
+
 class AppAccess(ndb.Model):
     name = ndb.StringProperty()
     active = ndb.BooleanProperty(default=True)
@@ -42,9 +50,9 @@ class AppAccess(ndb.Model):
                 profile_key = device.assigned_profile
         if not profile_key:
             # find the fallback
-            profile = Profile.query(ancestor=self.key, default=True).get()
+            profile = Profile.query(Profile.default == True, ancestor=self.key).get()
             if not profile:
-                raise ValueError()  # FIXME: we do not have any default here
+                raise NoDefaultDefined()  # FIXME: we do not have any default here
 
             if user_id:
                 User(id=user_id, parent=self.key,

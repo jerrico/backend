@@ -55,6 +55,31 @@ class SimpleProfilerTest(ndb_tests.NDBTest):
         self.assertEquals(profile_state["states"]["upload_photo"][0]["left"], 10)
         self.assertEquals(profile_state["states"]["upload_photo"][0]["limit_to"], 10)
 
+
+    def test_new_user(self):
+        self._load_simple()
+        profile_state = self.app_access.compile_profile_state(user_id="free_new")
+        self.assertEquals(profile_state["profile"], "free")
+        self.assertEquals(profile_state["default"], "deny")
+        self.assertEquals(len(profile_state["states"]), 3)
+        self.assertEquals(len(profile_state["states"]["take_photo"]), 1)
+        self.assertTrue(profile_state["states"]["take_photo"][0]["allow"])
+        self.assertEquals(profile_state["states"]["upload_photo"][0]["left"], 10)
+        self.assertEquals(profile_state["states"]["upload_photo"][0]["limit_to"], 10)
+
+
+    def test_new_device(self):
+        self._load_simple()
+        profile_state = self.app_access.compile_profile_state(device_id="default_new")
+        self.assertEquals(profile_state["profile"], "free")
+        self.assertEquals(profile_state["default"], "deny")
+        self.assertEquals(len(profile_state["states"]), 3)
+        self.assertEquals(len(profile_state["states"]["take_photo"]), 1)
+        self.assertTrue(profile_state["states"]["take_photo"][0]["allow"])
+        self.assertEquals(profile_state["states"]["upload_photo"][0]["left"], 10)
+        self.assertEquals(profile_state["states"]["upload_photo"][0]["limit_to"], 10)
+
+
     def test_with_simple_counter(self):
         self._load_simple()
         LogEntry.make(self.app_access.key, "free_u", None,
