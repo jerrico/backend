@@ -6,7 +6,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title></title>
+        <title>jerri.co - the Profile- and Permission-Management Service for App Developers operated by jerri the hamster </title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width">
 
@@ -17,84 +17,48 @@
         <script src="/static/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
     </head>
     <body>
-
-        <script type="text/template" id="tmpl-main">
-            <div class="hero-unit">
-                <h1>Welcome!</h1>
-                <p>Startin Text</p>
-                <p>Let`s get things done</p>
-                <p><a class="btn btn-primary btn-large">Learn more &raquo;</a></p>
-            </div>
-
-            <div class="row">
-                <div class="span4">
-                    <h2>Books</h2>
-                    <p>There are plenty of programming and hacking books out there. Not all are good and it sometimes gets overwhelming. Here you can find those books that helped us learn and we recommend reading.</p>
-                    <p><a class="btn" href="#books/">Recommended Books &raquo;</a></p>
-                </div>
-                <div class="span4">
-                    <h2>Videos</h2>
-                    <p>Plenty of talks on tech topic help us learn every. And while there are a bunch which surface up through to us via social media and our channels not all are known to every. So we want to recommend some.</p>
-                    <p><a class="btn" href="#video/">Recommended Videos &raquo;</a></p>
-                </div>
-                <div class="span4">
-                    <h2>Online Courses</h2>
-                    <p>More and more online courses poping up it becomes hard to choose. Those are the online courses that helped us and we`d recommend</p>
-                    <p><a class="btn" href="#courses/">Recommended Courses &raquo;</a></p>
-               </div>
-            </div>
-        </script>
-
-        
         <!--[if lt IE 7]>
             <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
         <![endif]-->
 
         <!-- This code is taken from http://twitter.github.com/bootstrap/examples/hero.html -->
-
-        <div id="navbar" class="navbar">
-          <div class="navbar-inner">
-            <div class="container">
-              <a class="brand" href="#">recommendly</a>
-              <ul class="nav" id="main-nav">
-                  <li id="home-menu" class="active"><a href="#/">Home</a></li>
-                  <li id="books-menu"><a href="#books/">Books</a></li>
-                  <li id="videos-menu"><a href="#videos/">Videos</a></li>
-                  <li id="courses-menu"><a href="#courses/">Courses</a></li>
-              </ul>
-              <div id="search-form" class="offset7">
-                <form class="navbar-search">
-                    <input type="text" class="search-query" name="search" placeholder="Search">
-                </form>
-              </div>
-              <ul class="nav pull-right" id="login-bar">
-                </ul>
-            </div>
-          </div>
-        </div>
-
-        <div id="generalModal" class="modal hide fade" tabindex="-1" role="dialog">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h3>Modal header</h3>
-          </div>
-          <div class="content-wrapper">
-          </div>
-        </div>
-
         <div class="container">
-            <div id="main">
+            <div class="hero-unit" style="margin: 100px auto 60px auto">
+                <div class="row">
+                    <div class="span4">
+                        <img src="/static/img/jerri.png" class="span3" title="This is Jerri">
+                        <img src="/static/img/nametag.png" style="margin-top:15px; margin-left: 40px">
+                    </div>
+                    <div class="span6">
+                        <h1>Hi there!</h1>
+                        <p>and welcome to <a href="http://www.jerri.co/">jerri.co</a> - the Profile- and Permission-Management Service for App Developers.</p>
+                        <p>Sorry to inform you, I am operating in private beta at the moment and do not accept any new registrations.</p>
+                        <h2>Wanna stay updated?</h2>
+                        <form class="form-inline" action="https://docs.google.com/forms/d/12A8mpjps4uXBu6Y3p7T9iygncrxMeeaL9RcJ7dgKjPg/formResponse" method="POST">
+                            <div class="">
+                                <input name="entry.728452987" type="email" class="span4" placeholder="Type email here to stay updated">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
 
-                <div style="position: absolute; left: 35%; top:35%; width: 30%" class="progress progress-striped progress-danger active">
-                    <div class="bar" id="progress-bar" style="width: 10%;"></div>
+                        </form>
+                    </div>
                 </div>
             </div>
-
+        </div>
 
             <hr>
 
-            <footer>
-                <p>&copy; Nothing 2012</p>
+            <footer style="text-align:center">
+                <div class="container">
+                    <div class="row">
+                        <p>
+                            <a href="http://www.jerri.co/">jerri.co</a> - the Profile- and Permission-Management Service for App Developers.
+                        </p>
+                    </div>
+                    <div class="row">
+                        <p>&copy; <a href="http://www.create-build-execute.com" target="_blank">Benjamin Kampmann</a> 2013</p>
+                    </div>
+                </div>
             </footer>
 
         </div> <!-- /container -->
