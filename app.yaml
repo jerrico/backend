@@ -13,6 +13,10 @@ handlers:
   static_files: static/index.html
   upload: static/index.html
 
+- url: /changelog
+  static_files: static/changelog.html
+  upload: static/changelog.html
+
 - url: /console/
   login: required
   static_files: static/console.html
