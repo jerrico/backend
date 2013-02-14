@@ -277,7 +277,8 @@ var consoleApp = angular.module('console', ["console.services"]).
     $scope.model = {};
 
     $scope.saveApp = function() {
-      var newApp = new App({name: $scope.model.app_name});
+      var newApp = new App({name: $scope.model.app_name,
+            template:$scope.model.template});
       $scope.model.app_name = null;
       newApp.$save(function() {
 

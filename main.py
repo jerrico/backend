@@ -2,7 +2,8 @@
 
 from utils import verified_api_request, understand_post
 from google.appengine.ext import ndb
-from models import LogEntry, AppAccess, User, Device, Profile, RestrictionTypes
+from models import LogEntry, AppAccess, User, Device, Profile, \
+        RestrictionTypes, PerTimeRestriction, BinaryRestriction, TotalAmountRestriction
 
 import webapp2
 import json
@@ -138,11 +139,94 @@ class AppsManager(ModelRestApi):
 
     def _add_item(self, params):
         name = params.get("name", None)
+        template = params.get("template", None)
         if not name:
             webapp2.abort(400, "No app name given")
         app = AppAccess.create(name)
         app.put()
+        if template:
+            self._setup_template(app, template)
         return app.prepare_json()
+
+    def _setup_template(self, app, template):
+        if template == "evernote":
+            Profile(parent=app.key, name="Free", default=True,
+                    allow_per_default=False, restrictions=[
+                        PerTimeRestriction(
+                            action="upload_note",
+                            limit_to=60 * 1024 * 1024,   # 60 megs
+                            duration=30 * 24 * 60 * 60)  # over 30 days
+                ]).put()
+            Profile(parent=app.key, name="Premium", default=False,
+                    allow_per_default=False, restrictions=[
+                        PerTimeRestriction(
+                            action="upload_note",
+                            limit_to=1000 * 1024 * 1024,   # 1 Gig
+                            duration=30 * 24 * 60 * 60),  # over 30 days
+                        BinaryRestriction(
+                            action="store_offline_notebooks", allow=True
+                            ),
+                        BinaryRestriction(
+                            action="see_history", allow=True
+                            ),
+                        BinaryRestriction(
+                            action="hide_promotions", allow=True
+                            ),
+                        BinaryRestriction(
+                            action="lock_app", allow=True
+                            ),
+                        BinaryRestriction(
+                            action="share_notes", allow=True
+                            ),
+                        BinaryRestriction(
+                            action="search", allow=True
+                            ),
+                    ]).put()
+            Profile(parent=app.key, name="BetaTester", default=False,
+                    allow_per_default=True).put()  # we can do everything
+        elif template == "basecamp":
+            Profile(parent=app.key, name="Basic", default=True,
+                    allow_per_default=False, restrictions=[
+                        TotalAmountRestriction(
+                            action="upload_file",  # 3 GB file upload
+                            total_max=3 * 1000 * 1024 * 1024),
+                        TotalAmountRestriction(
+                            action="create_project",
+                            total_max=10
+                            ),
+                ]).put()
+            Profile(parent=app.key, name="Plus", default=False,
+                    allow_per_default=False, restrictions=[
+                        TotalAmountRestriction(
+                            action="upload_file",  # 15 GB file upload
+                            total_max=15 * 1000 * 1024 * 1024),
+                        TotalAmountRestriction(
+                            action="create_project",
+                            total_max=40
+                            ),
+                ]).put()
+            Profile(parent=app.key, name="Premium", default=False,
+                    allow_per_default=False, restrictions=[
+                        TotalAmountRestriction(
+                            action="upload_file",  # 40 GB file upload
+                            total_max=40 * 1000 * 1024 * 1024),
+                        TotalAmountRestriction(
+                            action="create_project",
+                            total_max=100
+                            ),
+                ]).put()
+            Profile(parent=app.key, name="Unlimited", default=False,
+                    allow_per_default=False, restrictions=[
+                        TotalAmountRestriction(
+                            action="upload_file",  # 100 GB file upload
+                            total_max=100 * 1000 * 1024 * 1024),
+                        BinaryRestriction(
+                            action="create_project",
+                            allow=True
+                            ),
+                ]).put()
+            Profile(parent=app.key, name="BetaTester", default=False,
+                    allow_per_default=True).put()  # we can do everything
 
     def _get_item_key(self, item_id):
         return ndb.Key(urlsafe=item_id)

@@ -29,6 +29,14 @@
           <div class="modal-body">
 
             <p><input type="text" required="required" class="span3" ng-model="model.app_name" placeholder="Name your App"></p>
+            <div class="control-group">
+              <label>Import Template</label>
+              <select ng-model="model.template">
+                <option value="">(empty)</option>
+                <option value="evernote">Evernote Freemium</option>
+                <option value="basecamp">Basecamp Plans</option>
+              </select>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="submit" class="btn btn-primary">Add App</button>
