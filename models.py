@@ -150,12 +150,15 @@ class Profile(ndb.Model):
     restrictions = ndb.LocalStructuredProperty(Restriction, compressed=True,
                 repeated=True)
 
-    def prepare_json(self):
+    def prepare_json(self, short=False):
         prepped = self.to_dict()
         prepped["id"] = self.key.id()
         prepped["created"] = date_json_format(prepped["created"])
         prepped["last_change"] = date_json_format(prepped["last_change"])
-        prepped["restrictions"] = [x.prepare_json() for x in self.restrictions]
+        if short:
+            prepped.pop("restrictions")
+        else:
+            prepped["restrictions"] = [x.prepare_json() for x in self.restrictions]
         return prepped
 
     def _pre_put_hook(self):
@@ -172,7 +175,10 @@ class User(ndb.Expando):
     # key = parent=>AppAccess; ID given by app
     assigned_profile = ndb.KeyProperty('p', kind=Profile, required=False)
 
-    prepare_json = ndb.Expando.to_dict
+    def prepare_json(self):
+        resp = self.to_dict()
+        resp["assigned_profile"] = resp["assigned_profile"].get().prepare_json(short=True)
+        return resp
 
 
 # for Device Info
