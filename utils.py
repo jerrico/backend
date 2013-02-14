@@ -1,6 +1,6 @@
 
 from google.appengine.ext.ndb import Key
-from google.appengine.api import users
+from google.appengine.api import users, urlfetch
 from jerry.app_engine import Provider
 
 from models import LogEntry
@@ -42,13 +42,14 @@ def _get_user():
     if not user:
         webapp2.abort(400, "User needs to be logged in")
 
-    user.jerry_user = _get_jerry_provider().signin(user.user_id())
+    user.jerry_profile = _get_jerry_provider().signin(user.user_id())
     return user
 
 
 def verify_user(func):
     def wrapped(self, *args, **kwargs):
         self.user = _get_user()
+        self.jerry_profile = self.user.jerry_profile
         return func(self, *args, **kwargs)
     return wrapped
 
@@ -91,6 +92,8 @@ def verify_request(method, url, params):
     if my_signature != signature:
         webapp2.abort(403, "invalid signature")
 
+    app_access.jerry_profile = _get_jerry_provider().signin(app_access.owner.user_id())
+
     return app_access
 
 
@@ -130,9 +133,12 @@ def verified_api_request(func, without_key=False):
         if '_signature' in params:
             handler.app_access = verify_request(handler.request.method,
                     handler.request.path_url, params)
+            handler.jerry_profile = handler.app_access.jerry_profile
         else:
             handler.user = _get_user()
+            handler.jerry_profile = handler.user.jerry_profile
             if not without_key:
                 handler.app_access = _get_key(params)
+
         return func(handler, *args, **kwargs)
     return as_json(wrapped)
