@@ -35,7 +35,7 @@ class AppAccess(ndb.Model):
         prepped.pop("owner")
         return prepped
 
-    def compile_profile_state(self, user_id=None, device_id=None):
+    def compile_profile_state(self, user_id=None, device_id=None, jerry_profile=None):
         assert user_id or device_id, "user_id or device_id need to be specified"
         profile_key = None
         user_key = None
@@ -62,10 +62,12 @@ class AppAccess(ndb.Model):
                 user = User(id=user_id, parent=self.key,
                         assigned_profile=profile.key)
                 user.put()
+                jerry_profile and jerry_profile.did("create_user")
             if device_id:
                 device = Device(id=device_id, parent=self.key,
                         assigned_profile=profile.key)
                 device.put()
+                jerry_profile and jerry_profile.did("create_device")
         else:
             profile = profile_key.get()
 
@@ -82,6 +84,7 @@ class AppAccess(ndb.Model):
             except KeyError:
                 states[res.action] = [res.compile_limitation(query)]
 
+        jerry_profile and jerry_profile.did("query_user")
         return {
             "profile": profile.name,
             "default": profile.allow_per_default and "allow" or "deny",

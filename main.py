@@ -41,12 +41,20 @@ class ModelRestApi(webapp2.RequestHandler):
     def _update_item(self, model, params):
         model.populate(**self._decorate_params(params))
         model.put()
+        self._post_update(self, model, params)
         return model.prepare_json()
+
+    def _post_update(self, model, params):
+        pass
 
     def _add_item(self, params):
         model = self.model_cls(parent=self.app_access.key, **params)
         model.put()
+        self._post_add(model, params)
         return model.prepare_json()
+
+    def _post_add(self, model, params):
+        pass
 
     def _get_item_key(self, item_id):
         return ndb.Key(self.model_cls, self._decorate_item_id(item_id),
@@ -97,7 +105,11 @@ class Logger(ModelRestApi):
         keys = ndb.put_multi([LogEntry.make(app_key, user_id, device_id, **x)
                 for x in entries])
         self.response.status = 201
+        self._post_add(keys, None)
         return {"entries": len(keys)}
+
+    def _post_add(self, model, params):
+        self.jerry_profile.did("log_entry", len(model))
 
 
 class Devices(ModelRestApi):
@@ -119,7 +131,11 @@ class Profiles(ModelRestApi):
             webapp2.abort(400, "Please specify the name of the profile")
         model = self.model_cls(parent=self.app_access.key, name=name)
         model.put()
+        self._post_add(model, params)
         return model.prepare_json()
+
+    def _post_add(self, model, params):
+        self.jerry_profile.did("create_profile", 1)
 
     def _decorate_params(self, params):
         prepared_params = ModelRestApi._decorate_params(self, params)
@@ -146,7 +162,11 @@ class AppsManager(ModelRestApi):
         app.put()
         if template:
             self._setup_template(app, template)
+        self._post_add(app, params)
         return app.prepare_json()
+
+    def _post_add(self, model, params):
+        self.jerry_profile.did("create_app", 1)
 
     def _setup_template(self, app, template):
         if template == "evernote":
@@ -255,7 +275,9 @@ class GetPermissionsState(webapp2.RequestHandler):
     def get(self):
         return self.app_access.compile_profile_state(
                 user_id=self.request.GET.get("user_id"),
-                device_id=self.request.GET.get("device_id"))
+                device_id=self.request.GET.get("device_id"),
+                jerry_profile=self.jerry_profile
+                )
 
 
 app = webapp2.WSGIApplication([
