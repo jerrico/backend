@@ -11,6 +11,12 @@ indexes:
 # your application using appcfg.py.
 
 - kind: LogEntry
+  properties:
+  - name: a
+  - name: us
+  - name: w
+
+- kind: LogEntry
   ancestor: yes
   properties:
   - name: w
