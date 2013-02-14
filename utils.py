@@ -3,6 +3,8 @@ from google.appengine.ext.ndb import Key
 from google.appengine.api import users
 from jerry.app_engine import Provider
 
+from models import LogEntry
+
 import hmac
 import hashlib
 import binascii
@@ -11,9 +13,28 @@ import json
 import urllib
 
 
+class MySelfProvider(Provider):
+
+    def __init__(self, *args, **kwargs):
+        Provider.__init__(self, *args, **kwargs)
+        self.app_access = Key(urlsafe=self.key).get()
+
+    def _set_memcache(self, *args, **kwargs):
+        # ignore internal memcache
+        pass
+
+    def _signin(self, user):
+        state = self.app_access.compile_profile_state(user.user_id, user.device_id)
+        user.load_state(state)
+
+    def did(self, user, action, change, **kwargs):
+        LogEntry.make(self.app_access.key, user.user_id, user.device_id,
+            action=action, quantity=change, **kwargs).put()
+
+
 def _get_jerry_provider():
-    return Provider(key="agxkZXZ-ai1lcnJpY29yDwsSCUFwcEFjY2VzcxgBDA",
-            secret="9fd8bf77b36e4ee183d13768b51ce3cb")
+    return MySelfProvider(key="agxkZXZ-ai1lcnJpY29yEAsSCUFwcEFjY2VzcxjpBww",
+            secret="982b3800288b452a888e3bd31d982adf")
 
 
 def _get_user():
