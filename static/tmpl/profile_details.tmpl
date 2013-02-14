@@ -25,24 +25,7 @@
             </p>
             <p ng-show="params.class_=='PerTimeRestriction'">
               limit to <input name="limit" type="number" class="span1" ng-model="params.limit_to" placeholder="x" ng-required="params.class_=='PerTimeRestriction'" min="0" /> times per
-              <select name="duration" ng-required="params.class_=='PerTimeRestriction'" ng-model="params.duration">
-                <option value="1">second </option>
-                <option value="60">minute</option>
-                <option value="1800">half an hour</option>
-                <option value="3600">hour</option>
-                <option value="7200">2 hours</option>
-                <option value="14400">4 hours</option>
-                <option value="28800">8 hours</option>
-                <option value="43200">12 hours</option>
-                <option value="86400">24 hours</option>
-                <option selected="selected" value="86401">day</option>
-                <option value="172800">2 days</option> 
-                <option value="432000">5 days</option> 
-                <option value="604800">7 days</option> 
-                <option value="604801">week</option>  
-                <option value="1209600">2 weeks</option> 
-                <option value="2419200">4 weeks</option> 
-                <option value="30758401">year</option> 
+              <select name="duration" ng-required="params.class_=='PerTimeRestriction'" ng-model="params.duration" ng-options="option.value as option.name for option in timeOptions">
               </select>
             </p>
             <p ng-show="params.class_=='AccountAmountRestriction'">
@@ -99,7 +82,7 @@
 				<td>{{rest.class_}}</td>
 				<td>
 					<span ng-repeat="attr in ['allow', 'limit_to', 'duration', 'total_max', 'account_item', 'quantity_change']">
-						<span ui-if="rest.hasOwnProperty(attr)">{{attr}}: {{rest[attr]}}</span>
+						<span ui-if="rest.hasOwnProperty(attr)">{{attr}}: {{$parent.$parent.formatSettingsKey(attr, rest[attr])}}</span>
 					</span>
 				</td>
 				<td>

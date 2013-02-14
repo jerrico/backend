@@ -85,6 +85,25 @@ angular.module('console.services', ['ngResource', 'ui']).
     var self = this;
     self.selected_app = null;
     self.profiles = null;
+    self.timeOptions = [
+        {value: 1, name: "second"},
+        {value: 60, name: "minute"},
+        {value: 1800, name: "half an hour"},
+        {value: 3600, name: "hour"},
+        {value: 7200, name: "2 hours"},
+        {value: 14400, name: "4 hours"},
+        {value: 28800, name: "8 hours"},
+        {value: 43200, name: "12 hours"},
+        {value: 86400, name: "24 hours"},
+        {value: 86401, name: "day"},
+        {value: 172800, name: "2 days"},
+        {value: 432000, name: "5 days"},
+        {value: 604800, name: "7 days"},
+        {value: 604801, name: "week"},
+        {value: 1209600, name: "2 weeks"},
+        {value: 2419200, name: "4 weeks"},
+        {value: 30758401, name: "year"}
+      ];
 
     self.selectApp = function(app) {
       if (!app.profiles) app.profiles = Profile.query({_key:app.key});
@@ -180,10 +199,21 @@ var consoleApp = angular.module('console', ["console.services"]).
   controller ("ProfileDetailsCtrl", function($scope, appState, $rootScope, Profile, LogEntry, $routeParams){
     var app = appState.findAndSelectApp($routeParams.appID);
     var profile = Profile.get({profileID: $routeParams.profileID, '_key': app.key});
+    var timeNames = {};
+    $.each(appState.timeOptions, function(idx, item) {
+      timeNames[item.value] = item.name;
+    });
     $scope.profile = profile;
     appState.profile = profile;
     $scope.saveModel = saveModel = function (){
       profile.$save({ '_key': app.key});
+    };
+
+    $scope.formatSettingsKey = function(keyName, value) {
+      if (keyName === 'duration') {
+        return timeNames[value] || moment.duration(value, "seconds").humanize();
+      }
+      return value;
     };
     $scope.editRestriction = function(idx) {
       $rootScope.$broadcast("editRestriction", {idx: idx,
@@ -217,6 +247,7 @@ var consoleApp = angular.module('console', ["console.services"]).
   }).
   controller ("AddRestrictionCtrl", function ($scope, $location, appState) {
     $scope.params = {};
+    $scope.timeOptions = appState.timeOptions;
     $scope.$on("editRestriction", function(key, val) {
       $scope.idx = val.idx + 1; // prevent == 0
       angular.copy(val.restriction, $scope.params);
@@ -257,7 +288,6 @@ var consoleApp = angular.module('console', ["console.services"]).
   }).
   controller ("AddProfileCtrl", function ($scope, $location, Profile, appState) {
     $scope.name = null;
-
     $scope.saveProfile = function() {
       var app = appState.selected_app,
           newProfile = new Profile({"name": $scope.name, "appKey": app.key});
