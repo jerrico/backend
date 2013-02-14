@@ -1,6 +1,7 @@
 
 from google.appengine.ext.ndb import Key
 from google.appengine.api import users
+from jerry.app_engine import Provider
 
 import hmac
 import hashlib
@@ -10,10 +11,17 @@ import json
 import urllib
 
 
+def _get_jerry_provider():
+    return Provider(key="agxkZXZ-ai1lcnJpY29yDwsSCUFwcEFjY2VzcxgBDA",
+            secret="9fd8bf77b36e4ee183d13768b51ce3cb")
+
+
 def _get_user():
     user = users.get_current_user()
     if not user:
         webapp2.abort(400, "User needs to be logged in")
+
+    user.jerry_user = _get_jerry_provider().signin(user.user_id())
     return user
 
 
