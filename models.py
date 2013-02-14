@@ -22,15 +22,17 @@ class AppAccess(ndb.Model):
     created = ndb.DateTimeProperty(auto_now_add=True)
     secret = ndb.StringProperty(required=True, indexed=False)
     domain = ndb.StringProperty(indexed=False)
+    owner = ndb.UserProperty()
 
     @classmethod
-    def create(cls, app_name):
-        return cls(name=app_name, active=True, secret=uuid4().get_hex())
+    def create(cls, app_name, **kwargs):
+        return cls(name=app_name, active=True, secret=uuid4().get_hex(), **kwargs)
 
     def prepare_json(self):
         prepped = self.to_dict()
         prepped["key"] = self.key.urlsafe()
         prepped["created"] = date_json_format(prepped["created"])
+        prepped.pop("owner")
         return prepped
 
     def compile_profile_state(self, user_id=None, device_id=None):

@@ -142,7 +142,7 @@ class AppsManager(ModelRestApi):
         template = params.get("template", None)
         if not name:
             webapp2.abort(400, "No app name given")
-        app = AppAccess.create(name)
+        app = AppAccess.create(name, owner=self.user)
         app.put()
         if template:
             self._setup_template(app, template)
