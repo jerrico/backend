@@ -81,7 +81,6 @@ class ModelRestApi(webapp2.RequestHandler):
     get = verified_api_request(_get)
     post = verified_api_request(_post)
 
-
 class Logger(ModelRestApi):
 
     model_cls = LogEntry
@@ -252,7 +251,8 @@ class AppsManager(ModelRestApi):
         return ndb.Key(urlsafe=item_id)
 
     def _get_query(self):
-        return self._decorate_query(self.model_cls.query())
+        return self._decorate_query(self.model_cls.query(
+                    self.model_cls.owner == self.user))
 
     get = verified_api_request(ModelRestApi._get, without_key=True)
     post = verified_api_request(ModelRestApi._post, without_key=True)
