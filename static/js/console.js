@@ -327,7 +327,7 @@ var consoleApp = angular.module('console', ["console.services"]).
 
         appState.addApp(newApp);
         $scope.dismiss();
-        $location.path("/" +  newApp.key + "details/");
+        $location.path("/" +  newApp.key + "/details/");
       });
     };
     $scope.$on("show-add-app", function() {
