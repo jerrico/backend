@@ -126,8 +126,8 @@ var getJSON = function(url, meth, data) {
   return promise;
 };
 
-	var JerryUser = function(user_id, device_id, provider, profile_state) {
-		this.loaded = false;
+  var JerryUser = function(user_id, device_id, provider, profile_state) {
+    this.loaded = false;
     this.provider = provider;
     this.user_id = user_id;
     this.device_id = device_id;
@@ -137,10 +137,10 @@ var getJSON = function(url, meth, data) {
     this.profile_state = {};
 
     if (profile_state) this.loadState(profile_state);
-	};
+  };
 
 
-	JerryUser.prototype = {
+  JerryUser.prototype = {
 
     decorateParams: function(params) {
       if (this.user_id) params["user_id"] = this.user_id;
@@ -157,7 +157,7 @@ var getJSON = function(url, meth, data) {
       return res;
     },
 
-		loadState: function(profile_state) {
+    loadState: function(profile_state) {
       this.profile_state = profile_state;
       this.profile_name = profile_state.profile;
       this.default_mode = profile_state['default'] === 'allow';
@@ -165,9 +165,9 @@ var getJSON = function(url, meth, data) {
       this.account = profile_state.account;
       this.loaded = true;
       this.trigger("loaded");
-		},
+    },
 
-		can: function(attr, action, change_amount) {
+    can: function(attr, action, change_amount) {
       var change = change_amount || 1,
           restrictions = this.restrictions[action];
       if (!restrictions || restrictions.length === 0) return this.default_mode;
@@ -180,9 +180,9 @@ var getJSON = function(url, meth, data) {
       }
 
       return !this.default_mode;
-		},
+    },
 
-		did: function(attr, change_amount) {
+    did: function(attr, change_amount) {
       var change = change_amount || 1,
           restrictions = this.restrictions[action];
 
@@ -198,19 +198,19 @@ var getJSON = function(url, meth, data) {
       var res = this.provider.did(this, action, change);
       this.trigger("did", {user: this, action: action, change: change});
       return res;
-		}
-	};
+    }
+  };
 
   RSVP.EventTarget.mixin(JerryUser.prototype);
 
 
-	var Jerry = function () {
-		this.key = null;
+  var Jerry = function () {
+    this.key = null;
     this.endpoint = "http://api.jerri.co/api/v1/";
     return this;
-	};
+  };
 
-	Jerry.prototype = {
+  Jerry.prototype = {
     userClass: JerryUser,
 
     init: function(key, endpoint){
@@ -255,10 +255,10 @@ var getJSON = function(url, meth, data) {
         return user
     }
 
-	};
+  };
 
   RSVP.EventTarget.mixin(Jerry.prototype);
 
-	window.jerry = new Jerry();
-	if (window.on_jerry_loaded) window.on_jerry_loaded(window.jerry);
+  window.jerry = new Jerry();
+  if (window.on_jerry_loaded) window.on_jerry_loaded(window.jerry);
 })(); 
