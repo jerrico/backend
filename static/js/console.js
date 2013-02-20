@@ -306,7 +306,8 @@ var consoleApp = angular.module('console', ["console.services"]).
   run(function(appState, $rootScope) {
     var ju;
     jerry.init("agxkZXZ-ai1lcnJpY29yEAsSCUFwcEFjY2VzcxjpBww", "/api/v1/");
-    appState.jerryUser = ju = jerry.signin(null, "browser");
+    jerry.customMethods["permission_state"] = "/api/v1/local_permission_state";
+    appState.jerryUser = ju = jerry.signin();
     appState.userCan = {};
     function updateCan() {
       $rootScope.$apply(function() {

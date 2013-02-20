@@ -280,6 +280,16 @@ class GetPermissionsState(webapp2.RequestHandler):
                 )
 
 
+class GetLocalPermissionsState(webapp2.RequestHandler):
+
+    def get(self):
+        return ndb.Key(urlsafe="agxkZXZ-ai1lcnJpY29yEAsSCUFwcEFjY2VzcxjpBww"
+            ).get().compile_profile_state(
+                user_id=self.user.user_id(),
+                jerry_profile=self.jerry_profile
+                )
+    get = verified_api_request(get, without_key=True)
+
 app = webapp2.WSGIApplication([
     ('/api/v1/verify_access', VerifyAccess),
     ('/api/v1/permission_state', GetPermissionsState),
@@ -290,6 +300,8 @@ app = webapp2.WSGIApplication([
     ('/api/v1/users', Users),
     ('/api/v1/devices/(.*?)', Devices),
     ('/api/v1/devices', Devices),
+    # only available with GLogin
+    ('/api/v1/local_permission_state', GetLocalPermissionsState),
     ('/api/v1/my_apps/(.*?)', AppsManager),
     ('/api/v1/my_apps', AppsManager)
 ], debug=True)
