@@ -164,6 +164,7 @@ var getJSON = function(url, meth, data) {
       this.restrictions = profile_state.states;
       this.account = profile_state.account;
       this.loaded = true;
+      this.trigger("loaded");
 		},
 
 		can: function(attr, action, change_amount) {
@@ -194,9 +195,13 @@ var getJSON = function(url, meth, data) {
         }
       }
 
-      return this.provider.did(this, action, change);
+      var res = this.provider.did(this, action, change);
+      this.trigger("did", {user: this, action: action, change: change});
+      return res;
 		}
 	};
+
+  RSVP.EventTarget.mixin(JerryUser.prototype);
 
 
 	var Jerry = function () {
@@ -231,9 +236,10 @@ var getJSON = function(url, meth, data) {
       if (unit) entry.unit = unit;
 
 
+      this.trigger("log", {entries: [entry]});
+
       return this._request("POST", "logger", {},
             make_params(user.decorateParams({'entries': JSON.stringify([entry])})));
-
     },
 
     signin: function(user_id, device_id){
@@ -242,6 +248,7 @@ var getJSON = function(url, meth, data) {
             ).then(function(json) {
               console.log(json);
               user.loadState(json);
+              this.trigger("userSignedIn", {user: user});
             }, function(err) {
               console.log(err);
             });
@@ -249,6 +256,8 @@ var getJSON = function(url, meth, data) {
     }
 
 	};
+
+  RSVP.EventTarget.mixin(Jerry.prototype);
 
 	window.jerry = new Jerry();
 	if (window.on_jerry_loaded) window.on_jerry_loaded(window.jerry);
