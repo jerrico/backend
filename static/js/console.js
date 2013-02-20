@@ -307,10 +307,10 @@ var consoleApp = angular.module('console', ["console.services"]).
     var ju;
     jerry.init("agxkZXZ-ai1lcnJpY29yEAsSCUFwcEFjY2VzcxjpBww", "/api/v1/");
     appState.jerryUser = ju = jerry.signin(null, "browser");
-    $rootScope.jerryCan = {};
+    appState.userCan = {};
     function updateCan() {
       $rootScope.$apply(function() {
-        $rootScope.jerryCan = ju.getCans();
+        appState.userCan = ju.getCans();
       });
     }
     ju.on("did", updateCan);
