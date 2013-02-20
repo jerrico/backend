@@ -71,7 +71,7 @@
                 <ul class="dropdown-menu">
                   <li ng-repeat="app in appState.apps"><a href="#/{{app.key}}/dashboard">{{app.name}}</a></li>
                   <li class="divider"></li>
-                  <li><a data-toggle="modal" href="#addAppModal" ><i class="icon-plus"></i> Add App</a></li>
+                  <li ><a ng-show="appState.userCan.add_app" data-toggle="modal" href="#addAppModal" ><i class="icon-plus"></i> Add App </a><a data-toggle="modal" href="#upgradeNow" ng-hide="appState.userCan.add_app" title="Limit exceeded"><i class="icon-leaf"></i>Upgrade to add more Apps</a></a></li>
                 </ul>
               </li>
               <li class="active"><a href="#/{{appState.selected_app.key}}/dashboard">Dashboard</a></li>
@@ -89,7 +89,7 @@
                       <ul class="dropdown-menu">
                         <li ng-repeat="profile in appState.profiles"><a ng-href="#/{{appState.selected_app.key}}/profiles/{{profile.id}}">{{profile.name}}</a></li>
                         <li class="divider"></li>
-                        <li><a data-toggle="modal" href="#addProfileModal" ><i class="icon-plus"></i> Add Profile</a></li>
+                        <li><a ng-show="appState.userCan.add_profile" data-toggle="modal" href="#addProfileModal"><i class="icon-plus"></i> Add Profile </a><a data-toggle="modal" href="#upgradeNow" ng-hide="appState.userCan.add_profile" title="Limit exceeded"><i class="icon-leaf"></i>Upgrade to add more Profiles</a></a></li>
                           </ul>
                   </li>
                   <li>
