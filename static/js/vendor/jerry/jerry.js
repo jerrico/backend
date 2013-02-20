@@ -207,6 +207,7 @@ var getJSON = function(url, meth, data) {
   var Jerry = function () {
     this.key = null;
     this.endpoint = "http://api.jerri.co/api/v1/";
+    this.customMethods = {};
     return this;
   };
 
@@ -220,8 +221,9 @@ var getJSON = function(url, meth, data) {
     },
 
     _request: function(method, end, params, data) {
+      var url = this.customMethods[end] ? this.customMethods[end] : this.endpoint + end;
       params["_key"] = this.key;
-      return getJSON(this.endpoint + end + "?" + make_params(params), method, data)
+      return getJSON(url + "?" + make_params(params), method, data)
     },
 
    did: function(user, action, quantity) {
