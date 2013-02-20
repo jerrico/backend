@@ -142,3 +142,16 @@ def verified_api_request(func, without_key=False):
 
         return func(handler, *args, **kwargs)
     return as_json(wrapped)
+
+
+def init_jerry_db():
+    from google.appengine.ext.ndb import Key
+    from models import AppAccess, Profile
+
+    app = AppAccess(key=Key(urlsafe="agxkZXZ-ai1lcnJpY29yEAsSCUFwcEFjY2VzcxjpBww"), name="jerrico", secret="982b3800288b452a888e3bd31d982adf")
+
+    app.put()
+
+    Profile(name="free", default=True, parent=app.key).put()
+    Profile(name="premium", default=False, parent=app.key).put()
+    Profile(name="megalon", allow_per_default=True, parent=app.key).put()
