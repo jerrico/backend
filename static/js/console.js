@@ -303,6 +303,19 @@ var consoleApp = angular.module('console', ["console.services"]).
       });
     };
   }).
+  run(function(appState, $rootScope) {
+    var ju;
+    jerry.init("agxkZXZ-ai1lcnJpY29yEAsSCUFwcEFjY2VzcxjpBww", "/api/v1/");
+    appState.jerryUser = ju = jerry.signin(null, "browser");
+    $rootScope.jerryCan = {};
+    function updateCan() {
+      $rootScope.$apply(function() {
+        $rootScope.jerryCan = ju.getCans();
+      });
+    }
+    ju.on("did", updateCan);
+    ju.promise.then(updateCan);
+  }).
   controller ("AddAppCtrl", function ($scope, $location, App, appState) {
     $scope.model = {};
 
