@@ -148,6 +148,15 @@ var getJSON = function(url, meth, data) {
       return params;
     },
 
+    getCans: function() {
+      var res = {},
+          key;
+      for (key in this.restrictions) {
+        res[key] = this.can(key);
+      };
+      return res;
+    },
+
 		loadState: function(profile_state) {
       this.profile_state = profile_state;
       this.profile_name = profile_state.profile;
@@ -159,7 +168,7 @@ var getJSON = function(url, meth, data) {
 
 		can: function(attr, action, change_amount) {
       var change = change_amount || 1,
-          restrictions = self.restrictions[action];
+          restrictions = this.restrictions[action];
       if (!restrictions || restrictions.length === 0) return this.default_mode;
 
       for (var idx=0; idx < restrictions.length; idx++) {
@@ -174,7 +183,7 @@ var getJSON = function(url, meth, data) {
 
 		did: function(attr, change_amount) {
       var change = change_amount || 1,
-          restrictions = self.restrictions[action];
+          restrictions = this.restrictions[action];
 
       if (restrictions && restrictions.length > 0) {
         for (var idx=0; idx < restrictions.length; idx++) {
