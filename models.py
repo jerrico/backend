@@ -191,7 +191,10 @@ class Device(ndb.Expando):
     # key = parent=>AppAccess; Device-ID given
     assigned_profile = ndb.KeyProperty('p', kind=Profile, required=False)
 
-    prepare_json = ndb.Expando.to_dict
+    def prepare_json(self):
+        resp = self.to_dict()
+        resp["assigned_profile"] = resp["assigned_profile"].get().prepare_json(short=True)
+        return resp
 
 
 class LogEntry(ndb.Model):
