@@ -148,12 +148,18 @@ var getJSON = function(url, meth, data) {
       return params;
     },
 
-    getCans: function() {
+    getCans: function(more_keys) {
       var res = {},
-          key;
+          key, idx;
       for (key in this.restrictions) {
         res[key] = this.can(key);
-      };
+      }
+      if (more_keys)
+        for (idx in more_keys) {
+          key = more_keys[idx];
+          res[key] = this.can(key);
+        }
+
       return res;
     },
 
@@ -165,6 +171,16 @@ var getJSON = function(url, meth, data) {
       this.account = profile_state.account;
       this.loaded = true;
       this.trigger("loaded");
+    },
+
+    refresh: function() {
+      var user = this;
+      return user.provider._request("GET", "permission_state", user.decorateParams({})
+        ).then(function(json) {
+          user.loadState(json);
+        }, function(err) {
+          console ? console.log(err) : '';
+        });
     },
 
     can: function(attr, action, change_amount) {
@@ -245,15 +261,12 @@ var getJSON = function(url, meth, data) {
     },
 
     signin: function(user_id, device_id){
-        var user = new this.userClass(user_id, device_id, this)
-        user.promise = this._request("GET", "permission_state", user.decorateParams({})
-            ).then(function(json) {
-              console.log(json);
-              user.loadState(json);
-              this.trigger("userSignedIn", {user: user});
-            }, function(err) {
-              console.log(err);
-            });
+        var user = new this.userClass(user_id, device_id, this),
+            me = this;
+        user.promise = user.refresh();
+        user.promise.then(function() {
+          me.trigger("userSignedIn", {user: user});
+        });
         return user
     }
 
