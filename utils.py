@@ -148,7 +148,8 @@ def init_jerry_db():
     from google.appengine.ext.ndb import Key
     from models import AppAccess, Profile
 
-    app = AppAccess(key=Key(urlsafe="agxkZXZ-ai1lcnJpY29yEAsSCUFwcEFjY2VzcxjpBww"), name="jerrico", secret="982b3800288b452a888e3bd31d982adf")
+    app = AppAccess(key=Key(urlsafe="agxkZXZ-ai1lcnJpY29yEAsSCUFwcEFjY2VzcxjpBww"),
+            name="jerrico", secret="982b3800288b452a888e3bd31d982adf")
 
     app.put()
 
