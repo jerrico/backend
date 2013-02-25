@@ -19,6 +19,8 @@ This Permission checks whether an action has been issued over a certain quota ov
 ## TotalAmountRestriction
 Maybe you want to specify a total count that an action may be performed over the lifetime of the user independent of the time frame. Use this Restriction for to limit that. A classic example would be that a free user can only start the app 30 times and would have to upgrade after.
 
+## LocalAmountRestriction
+The LocalAmountRestriciton as well checks against an absolute maximum the user is allowed to do/have. But other than the TotalAmountRestriction it is not looking at the history and calculates all log-entries to figure out how many the user has left, but checks the given amount against this local amount. This is useful if you want to keep track of a certain fluctuative number of local settings (for e.g. active projects or scheduled messages), which changes frequently. It is expected that the developers takes care of the tracking here, but it is still encouraged to record changes via the did-command (though they do not have any influence on this restriction)
 
 ## AccountAmountRestriction
 This restriction checks against an amount given on the profile data to find out whether the permission is allowed. A classic case for that would be to have credits on the user account and allow an action only if the user has enough credits left to perform the action. Don't forget to specify which item on the account should be checked against. If the item isn't specified on the account, the permission will be denied in any case.

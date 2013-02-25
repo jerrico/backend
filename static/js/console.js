@@ -263,7 +263,8 @@ var consoleApp = angular.module('console', ["console.services"]).
         'BinaryRestriction': ['allow'],
         'PerTimeRestriction': ['limit_to', 'duration'],
         'AccountAmountRestriction': ['account_item', 'quantity_change'],
-        'TotalAmountRestriction' : ['total_max']
+        'TotalAmountRestriction' : ['total_max'],
+        'LocalAmountRestriction' : ['local_max']
       },
       res = {
         "class_": params.class_,

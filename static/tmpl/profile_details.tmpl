@@ -13,8 +13,9 @@
                 <option value="">Select </option>
                 <option value="BinaryRestriction">Binary allow/disallow</option>
                 <option value="PerTimeRestriction">Times During Period</option>
-                <option value="AccountAmountRestriction">Account Amount</option>
                 <option value="TotalAmountRestriction">Total Amount</option>
+                <option value="LocalAmountRestriction">Local Amount</option>
+                <option value="AccountAmountRestriction">Account Amount</option>
               </select>
             </p>
             <p ng-show="params.class_=='BinaryRestriction'">
@@ -37,6 +38,10 @@
             <p ng-show="params.class_=='TotalAmountRestriction'">
               <label>Total Maximum</label>
               <input name="total_max" type="number" ng-required="params.class_=='TotalAmountRestriction'" ng-model="params.total_max">
+            </p>
+            <p ng-show="params.class_=='LocalAmountRestriction'">
+              <label>local Maximum</label>
+              <input name="local_max" type="number" ng-required="params.class_=='localAmountRestriction'" ng-model="params.local_max">
             </p>
           </div>
           <div class="modal-footer">
@@ -81,7 +86,7 @@
 				<td>{{rest.action}}</td>
 				<td>{{rest.class_}}</td>
 				<td>
-					<span ng-repeat="attr in ['allow', 'limit_to', 'duration', 'total_max', 'account_item', 'quantity_change']">
+					<span ng-repeat="attr in ['allow', 'limit_to', 'duration', 'total_max', 'account_item', 'local_max',  'quantity_change']">
 						<span ui-if="rest.hasOwnProperty(attr)">{{attr}}: {{$parent.$parent.formatSettingsKey(attr, rest[attr])}}</span>
 					</span>
 				</td>

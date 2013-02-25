@@ -132,6 +132,10 @@ class TotalAmountRestriction(Restriction):
         return limitation
 
 
+class LocalAmountRestriction(Restriction):
+    local_max = ndb.IntegerProperty('m', required=True)
+
+
 class AccountAmountRestriction(Restriction):
     account_item = ndb.StringProperty('i', required=True)
     quantity_change = ndb.IntegerProperty('q', required=False, default=1)
@@ -140,6 +144,7 @@ RestrictionTypes = {
     "BinaryRestriction": BinaryRestriction,
     "PerTimeRestriction": PerTimeRestriction,
     "TotalAmountRestriction": TotalAmountRestriction,
+    "LocalAmountRestriction": LocalAmountRestriction,
     "AccountAmountRestriction": AccountAmountRestriction,
 }
 
