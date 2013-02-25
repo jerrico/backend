@@ -41,7 +41,7 @@ class ModelRestApi(webapp2.RequestHandler):
     def _update_item(self, model, params):
         model.populate(**self._decorate_params(params))
         model.put()
-        self._post_update(self, model, params)
+        self._post_update(model, params)
         return model.prepare_json()
 
     def _post_update(self, model, params):
