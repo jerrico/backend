@@ -1,0 +1,3 @@
+[submodule "jerry"]
+	path = jerry
+	url = git@github.com:jerrico/jerry.py.git
