@@ -7,6 +7,7 @@ from models import LogEntry, AppAccess, User, Device, Profile, \
 
 import webapp2
 import json
+import config
 
 
 class ModelRestApi(webapp2.RequestHandler):
@@ -283,7 +284,7 @@ class GetPermissionsState(webapp2.RequestHandler):
 class GetLocalPermissionsState(webapp2.RequestHandler):
 
     def get(self):
-        return ndb.Key(urlsafe="agxkZXZ-ai1lcnJpY29yEAsSCUFwcEFjY2VzcxjpBww"
+        return ndb.Key(urlsafe=config.jerry["key"]
             ).get().compile_profile_state(
                 user_id=self.user.user_id(),
                 jerry_profile=self.jerry_profile
