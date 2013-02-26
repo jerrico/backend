@@ -65,6 +65,16 @@
       }
     },
 
+    "LocalAmountRestriction": {
+      "allows": function(restriction, user, attr, change){
+        if (!restriction.local_max) return false;
+        return change < restriction.local_max;
+      },
+      "did": function(restriction, user, attr, change){
+        
+      }
+    },
+
     "PerTimeRestriction": {
       "allows": function(restriction, user, attr, change){
         if (!restriction.left) return false;
