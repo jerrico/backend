@@ -11,6 +11,7 @@ import binascii
 import webapp2
 import json
 import urllib
+import config
 
 
 class MySelfProvider(Provider):
@@ -33,8 +34,7 @@ class MySelfProvider(Provider):
 
 
 def _get_jerry_provider():
-    return MySelfProvider(key="agxkZXZ-ai1lcnJpY29yEAsSCUFwcEFjY2VzcxjpBww",
-            secret="982b3800288b452a888e3bd31d982adf")
+    return MySelfProvider(**config.jerry)
 
 
 def _get_user():
