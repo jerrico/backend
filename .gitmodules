@@ -1,3 +1,6 @@
 [submodule "jerry"]
 	path = jerry
 	url = git@github.com:jerrico/jerry.py.git
+[submodule "static/js/vendor/jerry"]
+	path = static/js/vendor/jerry
+	url = git@github.com:jerrico/jerry.js.git
