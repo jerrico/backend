@@ -294,7 +294,9 @@ var consoleApp = angular.module('console', ["console.services"]).
     var app = appState.findAndSelectApp($routeParams.appID);
     $scope.app = app;
     $scope.saveModel = function() {
-      app.$save();
+      app.$save(function() {
+        $scope.app.profiles = appState.profiles;
+      });
     };
   }).
   controller ("AddRestrictionCtrl", function ($scope, $location, appState) {
