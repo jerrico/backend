@@ -1,32 +1,24 @@
 
 <h2>Device: {{id}}</h2>
 <h3>Assigned Profile: <span editable="{type: 'select', source: profile_options}" editable-saved="save()" ng-model="device.assigned_profile.id"></span></h3>
-<h4>Device Account</h4>
-<p>the following information is attached to the device account</p>
-<table>
-	<thead>
-		<tr>
-			<th>Key</th>
-			<th>Value</th>
-			<th>Action</th>
-		</tr>
-	</thead>
-	<tbody ng-init="{showAdd: false}">
-		<tr ng-repeat="(key, value) in device.account">
-			<td>{{key}}</td>
-			<td><span editable editable-saved="save()" ng-model="device.account[key]"></span></td>
-			<td><a ng-click="delAccountItem(key)"><span class="icon icon-remove"></span></td>
-		</tr>
-		<tr ng-hide="showAdd">
-			<td colspan="3" style="text-align: right"><a href="" ng-click="showAdd=true">Add entry</a></td>
-		</tr>
-		<tr ng-form ng-show="showAdd">
-			<td><input type="text" placeholder="Key" ng-model="key"></td>
-			<td><input type="text" placeholder="Value" ng-model="value"></td>
-			<td><button type="submit" ng-click="addItem(key, value)">Add</button>&nbsp;<a href="" ng-click="showAdd=false">Done adding</a></td>
-		</tr>
-	</tbody>
-</table>
+<div class="row">
+	<div class="span12">
+		<h4>Device Account</h4>
+		<p>the following information is attached to the device account</p>
+		<dl class="dl-horizontal">
+		  <div ng-repeat="(key, value) in device.account">
+		    <dt>{{key}}</dt>
+		    <dd><span editable editable-saved="save()" ng-model="device.account[key]"></span></dd>
+		  </div>
+		</dl>
+		<div ng-form ng-show="showAdd">
+		  <input type="text" class="span2" placeholder="Key" ng-model="key">
+		  <input type="text" class="span2" placeholder="Value" ng-model="value">
+		  <button type="submit" ng-click="addItem(key, value); key=''; value=''">Add</button>&nbsp;<a href="" ng-click="showAdd=false">Done adding</a>
+		</div>
+		<a href="" ng-hide="showAdd" class="span offset1" ng-click="showAdd=true">+ Add Account Data</a>
+	</div>
+</div>
 
 <h3>Latest Activities</h3>
 
