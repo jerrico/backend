@@ -123,6 +123,9 @@ class Users(ModelRestApi):
             if not profile:
                 raise ValueError("Profile {} unknown.".format(profile_id))
             resp['assigned_profile'] = profile.key
+        account = params.get("account", None)
+        if account is not None:
+            resp['account'] = account
         return resp
 
 

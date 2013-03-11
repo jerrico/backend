@@ -260,10 +260,19 @@ var consoleApp = angular.module('console', ["console.services"]).
     $scope.app = app;
     $scope.user = User.get({userID: $routeParams.userID, '_key': app.key});
     $scope.logs = LogEntry.query({'_key': app.key, "user": $routeParams.userID });
-    $scope.saveProfile = function() {
+    $scope.save = function() {
       $scope.user.assigned_profile_id = $scope.user.assigned_profile.id;
       $scope.user.$save({ '_key': app.key});
     };
+    $scope.addItem = function(key, value){
+        $scope.user.account[key] = value;
+        $scope.save();
+    };
+    $scope.delAccountItem = function(key) {
+      delete $scope.user.account[key];
+      $scope.save();
+    }
+
   }).
   controller ("AppDetailsCtrl", function($scope, appState, $routeParams){
     var app = appState.findAndSelectApp($routeParams.appID);

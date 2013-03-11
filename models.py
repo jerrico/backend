@@ -179,27 +179,31 @@ class Profile(ndb.Model):
                 cur_default.default = False
                 cur_default.put()
 
+class AccountData(ndb.Expando):
+    pass
 
 # for User Info
-class User(ndb.Expando):
+class User(ndb.Model):
     # key = parent=>AppAccess; ID given by app
     assigned_profile = ndb.KeyProperty('p', kind=Profile, required=False)
+    account = ndb.StructuredProperty(AccountData)
 
     def prepare_json(self):
-        resp = self.to_dict()
-        resp["assigned_profile"] = resp["assigned_profile"].get().prepare_json(short=True)
+        resp = {'account': self.account and self.account.to_dict() or dict()}
+        resp["assigned_profile"] = self.assigned_profile.get().prepare_json(short=True)
         resp['id'] = self.key.id()
         return resp
 
 
 # for Device Info
-class Device(ndb.Expando):
+class Device(ndb.Model):
     # key = parent=>AppAccess; Device-ID given
     assigned_profile = ndb.KeyProperty('p', kind=Profile, required=False)
+    account = ndb.StructuredProperty(AccountData)
 
     def prepare_json(self):
-        resp = self.to_dict()
-        resp["assigned_profile"] = resp["assigned_profile"].get().prepare_json(short=True)
+        resp = {'account': self.account and self.account.to_dict() or dict()}
+        resp["assigned_profile"] = self.assigned_profile.get().prepare_json(short=True)
         resp['id'] = self.key.id()
         return resp
 

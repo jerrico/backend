@@ -1,8 +1,8 @@
 
 <h2>Device: {{id}}</h2>
-<h3>Assigned Profile: <span editable="{type: 'select', source: profile_options}" editable-saved="saveModel()" ng-model="device.assigned_profile.id"></span></h3>
-<h3>Device Info</h3>
-<p>We know the following about the device:</p>
+<h3>Assigned Profile: <span editable="{type: 'select', source: profile_options}" editable-saved="save()" ng-model="device.assigned_profile.id"></span></h3>
+<h4>Device Account</h4>
+<p>the following information is attached to the device account</p>
 <table>
 	<thead>
 		<tr>
@@ -11,7 +11,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		<tr ng-repeat="entry in device">
+		<tr ng-repeat="entry in device.account">
 			<td>{{entry}}</td>
 			<td>{{device[entry]}}</td>
 		</tr>

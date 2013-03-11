@@ -1,19 +1,29 @@
 
 <h2>User: {{id}}</h2>
-<h3>Assigned Profile: <span editable="{type: 'select', source: profile_options}" editable-saved="saveProfile()" ng-model="user.assigned_profile.id"></span></h3>
-<h3>User Info</h3>
-<p>We know the following about the user:</p>
+<h3>Assigned Profile: <span editable="{type: 'select', source: profile_options}" editable-saved="save()" ng-model="user.assigned_profile.id"></span></h3>
+<h4>User Account</h4>
+<p>the following information is attached to the user account</p>
 <table>
 	<thead>
 		<tr>
 			<th>Key</th>
 			<th>Value</th>
+			<th>Action</th>
 		</tr>
 	</thead>
-	<tbody>
-		<tr ng-repeat="entry in user">
-			<td>{{entry}}</td>
-			<td>{{user[entry]}}</td>
+	<tbody ng-init="{showAdd: false}">
+		<tr ng-repeat="(key, value) in user.account">
+			<td>{{key}}</td>
+			<td><span editable editable-saved="save()" ng-model="user.account[key]"></span></td>
+			<td><a ng-click="delAccountItem(key)"><span class="icon icon-remove"></span></td>
+		</tr>
+		<tr ng-hide="showAdd">
+			<td colspan="3" style="text-align: right"><a href="" ng-click="showAdd=true">Add entry</a></td>
+		</tr>
+		<tr ng-form ng-show="showAdd">
+			<td><input type="text" placeholder="Key" ng-model="key"></td>
+			<td><input type="text" placeholder="Value" ng-model="value"></td>
+			<td><button type="submit" ng-click="addItem(key, value)">Add</button>&nbsp;<a href="" ng-click="showAdd=false">Done adding</a></td>
 		</tr>
 	</tbody>
 </table>
