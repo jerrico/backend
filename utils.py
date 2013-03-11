@@ -132,7 +132,7 @@ def as_json(fun):
 
 def verified_api_request(func, without_key=False):
     def wrapped(handler, *args, **kwargs):
-        params = handler.request.params
+        params = dict(handler.request.params)
         if '_signature' in params:
             handler.app_access = verify_request(handler.request.method,
                     handler.request.path_url, params)

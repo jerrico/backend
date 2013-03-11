@@ -61,12 +61,12 @@ class AppAccess(ndb.Model):
 
             if user_id:
                 user = User(id=user_id, parent=self.key,
-                        assigned_profile=profile.key)
+                        account=profile.account, assigned_profile=profile.key)
                 user.put()
                 jerry_profile and jerry_profile.did("create_user")
             if device_id:
                 device = Device(id=device_id, parent=self.key,
-                        assigned_profile=profile.key)
+                        account=profile.account, assigned_profile=profile.key)
                 device.put()
                 jerry_profile and jerry_profile.did("create_device")
         else:
