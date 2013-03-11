@@ -250,6 +250,14 @@ var consoleApp = angular.module('console', ["console.services"]).
       $scope.device.assigned_profile_id = $scope.device.assigned_profile.id;
       $scope.device.$save({ '_key': app.key});
     };
+    $scope.addItem = function(key, value){
+        $scope.device.account[key] = value;
+        $scope.save();
+    };
+    $scope.delAccountItem = function(key) {
+      delete $scope.device.account[key];
+      $scope.save();
+    };
   }).
   controller ("UserDetailsCtrl", function($scope, appState, User, LogEntry, $routeParams){
     var app = appState.findAndSelectApp($routeParams.appID);
@@ -271,8 +279,7 @@ var consoleApp = angular.module('console', ["console.services"]).
     $scope.delAccountItem = function(key) {
       delete $scope.user.account[key];
       $scope.save();
-    }
-
+    };
   }).
   controller ("AppDetailsCtrl", function($scope, appState, $routeParams){
     var app = appState.findAndSelectApp($routeParams.appID);
