@@ -161,6 +161,7 @@ class Profile(ndb.Model):
     default = ndb.BooleanProperty('d', default=False)
     allow_per_default = ndb.BooleanProperty('a', default=False)
     account = ndb.StructuredProperty(AccountData, 'ad')
+    payment_id = ndb.StringProperty('p')
     # following the restrictions
     restrictions = ndb.LocalStructuredProperty(Restriction, compressed=True,
                 repeated=True)
@@ -171,8 +172,8 @@ class Profile(ndb.Model):
         prepped["created"] = date_json_format(prepped["created"])
         prepped["last_change"] = date_json_format(prepped["last_change"])
         if short:
-            prepped.pop("restrictions")
-            prepped.pop("account")
+            for x in ("restrictions", "account", 'payment_id'):
+                prepped.pop(x)
         else:
             prepped["restrictions"] = [x.prepare_json() for x in self.restrictions]
             prepped['account'] = self.account and self.account.to_dict() or dict()
@@ -203,6 +204,9 @@ class User(UDHelper, ndb.Model):
     assigned_profile = ndb.KeyProperty('p', kind=Profile, required=False)
     account = ndb.StructuredProperty(AccountData, 'a')
 
+    def make_log(self, action, **kwargs):
+        return LogEntry.make(self.key.parent(), self.key.id(), None, action=action, **kwargs)
+
 
 # for Device Info
 class Device(UDHelper, ndb.Model):
@@ -210,8 +214,11 @@ class Device(UDHelper, ndb.Model):
     assigned_profile = ndb.KeyProperty('p', kind=Profile, required=False)
     account = ndb.StructuredProperty(AccountData, 'a')
 
+    def make_log(self, action, **kwargs):
+        return LogEntry.make(self.key.parent(), None, self.key.id(), action=action, **kwargs)
 
-class LogEntry(ndb.Model):
+
+class LogEntry(ndb.Expando):
     # key = parent=>AppAccess
     when = ndb.DateTimeProperty("w", auto_now_add=True)
     user = ndb.KeyProperty("us", kind=User, required=False)
@@ -221,7 +228,12 @@ class LogEntry(ndb.Model):
     unit = ndb.StringProperty("un", required=False, indexed=False)
 
     def prepare_json(self):
-        prepped = self.to_dict()
+        prepped = {}
+        for key, val in self.to_dict().iteritems():
+            if isinstance(val, ndb.Key):
+                val = val.id()
+            prepped[key] = val
+        prepped["id"] = self.key.id()
         prepped["when"] = date_json_format(prepped["when"])
         prepped["user"] = self.user and self.user.id()
         prepped["device"] = self.device and self.device.id()

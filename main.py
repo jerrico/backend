@@ -136,7 +136,7 @@ class Devices(Users):
 class Profiles(ModelRestApi):
     model_cls = Profile
     no_item_raise = True
-    writeable = ('name', 'default', "account", 'allow_per_default')
+    writeable = ('name', 'default', "account", 'payment_id', 'allow_per_default')
 
     def _add_item(self, params):
         name = params.get("name")
@@ -304,7 +304,56 @@ class GetLocalPermissionsState(webapp2.RequestHandler):
                 )
     get = verified_api_request(get, without_key=True)
 
+class PaymentPing(webapp2.RequestHandler):
+
+    # these need to be overwritten by the implementation
+    USER_KEY = None
+    PROFILE_KEY = None
+
+    def get(self):
+        try:
+            user_key = self.request.GET[self.USER_KEY]
+            if not user_key:
+                raise ValueError
+        except (KeyError, ValueError):
+            webapp2.abort(400, "{} missing. Can't connect to user".format(self.USER_KEY))
+
+        try:
+            user = ndb.Key(urlsafe=user_key).get()
+            if not user:
+                raise ValueError("User not found.")
+        except Exception, e:
+            webapp2.abort(400, "Can't understand userkey {}: {}".format(user_key, e))
+
+        try:
+            profile_key = self.request.GET[self.PROFILE_KEY]
+        except KeyError:
+            webapp2.abort(400, "{} missing. Don't understand the profile".format(self.PROFILE_KEY))
+
+        app_key = user.key.parent()
+
+        # locate the profile
+        profile = Profile.query(Profile.payment_id == profile_key, ancestor=app_key).get()
+
+        if not profile:
+            user.make_log('upgrade_failed', message="No profile for '{}' found.".format(profile_key)).put()
+            return
+
+        user.assigned_profile, old_profile = profile.key, user.assigned_profile
+        #if profile.assign_account_on_upgrade:
+        #    user.account = profile.account
+        user.put()
+        user.make_log('upgrade', from_profile=old_profile, to_profile=profile.key).put()
+
+
+
+
+class PaymentWallPing(PaymentPing):
+    USER_KEY = 'uid'
+    PROFILE_KEY = 'goodsid'
+
 app = webapp2.WSGIApplication([
+    ('/api/v1/pingback/paymentwall', PaymentWallPing),
     ('/api/v1/verify_access', VerifyAccess),
     ('/api/v1/permission_state', GetPermissionsState),
     ('/api/v1/logs', Logger),

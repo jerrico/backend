@@ -64,7 +64,17 @@
 		
 </div>
 <div class="row">
-	<span>Created: {{profile.created}}</span>
+  <dl class="dl-horizontal">
+	 <dt>Created</dt>
+   <dd>{{profile.created}}</dd>
+   <dt>Payment ID</dt>
+   <dd ng-show="appState.userCan.accept_payment">
+      <span editable editable-saved="saveModel()" ng-model="profile.payment_id"></span>
+   </dd>
+   <dd ng-hide="appState.userCan.accept_payment">
+          <a data-toggle="modal" href="#upgradeNow" title="Only Pro-Accounts can do that" class="btn btn-warning"><i class="icon-leaf"></i>Upgrade to activate payments</a>
+        </dd>
+  </dl>
 </div>
 
 <div class="row">
