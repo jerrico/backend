@@ -65,7 +65,11 @@ angular.module('console.services', ['ngResource', 'ui']).
     return {
       require: 'ngModel',
       link: function(scope, elm, attrs, model) {
-        elm.editable(scope.$eval(attrs.editable));
+        elm.editable($.extend({
+          emptytext: "(empty)",
+          "emptyclass": "",
+          "unsavedclass": ""
+        }, scope.$eval(attrs.editable)));
         model.$render = function() {
             elm.editable('setValue', model.$viewValue);
         };
@@ -162,6 +166,9 @@ var consoleApp = angular.module('console', ["console.services"]).
         when('/:appID/profiles/:profileID', { controller: "ProfileDetailsCtrl",
             templateUrl: "/static/tmpl/profile_details.tmpl"}).
 
+        when('/:appID/users/:userID', { controller: "UserDetailsCtrl",
+            templateUrl: "/static/tmpl/user_details.tmpl"}).
+
         // listings
         when('/:appID/logs', { controller: "ListCtrl",
             templateUrl: "/static/tmpl/logs.tmpl", resolve: {
@@ -233,10 +240,30 @@ var consoleApp = angular.module('console', ["console.services"]).
   }).
   controller ("DeviceDetailsCtrl", function($scope, appState, Device, LogEntry, $routeParams){
     var app = appState.findAndSelectApp($routeParams.appID);
-    var device = Device.get({deviceID: $routeParams.deviceID, '_key': app.key});
     $scope.id = $routeParams.deviceID;
-    $scope.device = device;
+    $scope.profile_options = $.map(appState.profiles, function(item) {
+      return {value: item.id, text: item.name};
+    });
+    $scope.device = Device.get({deviceID: $routeParams.deviceID, '_key': app.key});
     $scope.logs = LogEntry.query({'_key': app.key, "device": $routeParams.deviceID });
+    $scope.save = function() {
+      $scope.device.assigned_profile_id = $scope.device.assigned_profile.id;
+      $scope.device.$save({ '_key': app.key});
+    };
+  }).
+  controller ("UserDetailsCtrl", function($scope, appState, User, LogEntry, $routeParams){
+    var app = appState.findAndSelectApp($routeParams.appID);
+    $scope.id = $routeParams.userID;
+    $scope.profile_options = $.map(appState.profiles, function(item) {
+      return {value: item.id, text: item.name};
+    });
+    $scope.app = app;
+    $scope.user = User.get({userID: $routeParams.userID, '_key': app.key});
+    $scope.logs = LogEntry.query({'_key': app.key, "user": $routeParams.userID });
+    $scope.saveProfile = function() {
+      $scope.user.assigned_profile_id = $scope.user.assigned_profile.id;
+      $scope.user.$save({ '_key': app.key});
+    };
   }).
   controller ("AppDetailsCtrl", function($scope, appState, $routeParams){
     var app = appState.findAndSelectApp($routeParams.appID);

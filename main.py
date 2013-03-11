@@ -112,12 +112,22 @@ class Logger(ModelRestApi):
         self.jerry_profile.did("log_entry", len(model))
 
 
-class Devices(ModelRestApi):
-    model_cls = Device
-
-
 class Users(ModelRestApi):
     model_cls = User
+
+    def _decorate_params(self, params):
+        resp = {}
+        profile_id = params.get("assigned_profile_id", None)
+        if profile_id is not None:
+            profile = Profile().get_by_id(int(profile_id), parent=self.app_access.key)
+            if not profile:
+                raise ValueError("Profile {} unknown.".format(profile_id))
+            resp['assigned_profile'] = profile.key
+        return resp
+
+
+class Devices(Users):
+    model_cls = Device
 
 
 class Profiles(ModelRestApi):

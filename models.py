@@ -188,6 +188,7 @@ class User(ndb.Expando):
     def prepare_json(self):
         resp = self.to_dict()
         resp["assigned_profile"] = resp["assigned_profile"].get().prepare_json(short=True)
+        resp['id'] = self.key.id()
         return resp
 
 
@@ -199,6 +200,7 @@ class Device(ndb.Expando):
     def prepare_json(self):
         resp = self.to_dict()
         resp["assigned_profile"] = resp["assigned_profile"].get().prepare_json(short=True)
+        resp['id'] = self.key.id()
         return resp
 
 

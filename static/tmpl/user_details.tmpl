@@ -1,8 +1,8 @@
 
-<h2>Device: {{id}}</h2>
-<h3>Assigned Profile: <span editable="{type: 'select', source: profile_options}" editable-saved="saveModel()" ng-model="device.assigned_profile.id"></span></h3>
-<h3>Device Info</h3>
-<p>We know the following about the device:</p>
+<h2>User: {{id}}</h2>
+<h3>Assigned Profile: <span editable="{type: 'select', source: profile_options}" editable-saved="saveProfile()" ng-model="user.assigned_profile.id"></span></h3>
+<h3>User Info</h3>
+<p>We know the following about the user:</p>
 <table>
 	<thead>
 		<tr>
@@ -11,9 +11,9 @@
 		</tr>
 	</thead>
 	<tbody>
-		<tr ng-repeat="entry in device">
+		<tr ng-repeat="entry in user">
 			<td>{{entry}}</td>
-			<td>{{device[entry]}}</td>
+			<td>{{user[entry]}}</td>
 		</tr>
 	</tbody>
 </table>
@@ -26,7 +26,7 @@
 			<th>#</th>
 			<th>Timestamp</th>
 			<th>Action</th>
-			<th>User</th>
+			<th>Device</th>
 			<th>Quantity</th>
 			<th>Unit</th>
 		</tr>
@@ -36,7 +36,7 @@
 			<td></td>
 			<td>{{log.when}}</td>
 			<td>{{log.action}}</td>
-			<td><a ng-href="#/{{appState.selected_app.key}}/users/{{log.user}}">{{log.user}}</a></td>
+			<td><a ng-href="#/{{appState.selected_app.key}}/devices/{{log.device}}">{{log.device}}</a></td>
 			<td>{{log.quantity}}</td>
 			<td>{{log.unit}}</td>
 		</tr>

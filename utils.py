@@ -54,12 +54,16 @@ def verify_user(func):
     return wrapped
 
 
+def json_load_params(request):
+    params = request.POST
+    if not params:
+        params = json.loads(request.body)
+    return params
+
+
 def understand_post(func):
     def wrapped(self, *args, **kwargs):
-        params = self.request.POST
-        if not params:
-            params = json.loads(self.request.body)
-        return func(self, params, *args, **kwargs)
+        return func(self, json_load_params(self.request), *args, **kwargs)
     return wrapped
 
 
@@ -128,8 +132,7 @@ def as_json(fun):
 
 def verified_api_request(func, without_key=False):
     def wrapped(handler, *args, **kwargs):
-        params = handler.request.method == "POST" and \
-                handler.request.POST or handler.request.GET
+        params = handler.request.params
         if '_signature' in params:
             handler.app_access = verify_request(handler.request.method,
                     handler.request.path_url, params)
