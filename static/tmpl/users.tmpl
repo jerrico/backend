@@ -1,0 +1,17 @@
+
+<table class="table table-striped table-bordered table-hover">
+	<thead>
+		<tr>
+			<th>User ID</th>
+			<th>Profile</th>
+			<th>Account Data</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat="user in list">
+			<td><a ng-href="#/{{appState.selected_app.key}}/users/{{user.id}}">{{user.id}}</a></td>
+			<td><a ng-href="#/{{appState.selected_app.key}}/profiles/{{user.assigned_profile.id}}">{{user.assigned_profile.name}}</td>
+			<td>{{user.account|json}}</td>
+		</tr>
+	</tbody>
+</table>

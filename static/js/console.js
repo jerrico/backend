@@ -174,10 +174,10 @@ var consoleApp = angular.module('console', ["console.services"]).
             templateUrl: "/static/tmpl/logs.tmpl", resolve: {
                 model: "LogEntry"}}).
         when('/:appID/users', { controller: "ListCtrl",
-            templateUrl: "/static/tmpl/logs.tmpl", resolve: {
+            templateUrl: "/static/tmpl/users.tmpl", resolve: {
                 model: "User"}}).
         when('/:appID/devices', { controller: "ListCtrl",
-            templateUrl: "/static/tmpl/logs.tmpl", resolve: {
+            templateUrl: "/static/tmpl/devices.tmpl", resolve: {
                 model: "Device"}}).
         when('/:appID/profiles', { controller: "ListCtrl",
             templateUrl: "/static/tmpl/profiles.tmpl", resolve: {

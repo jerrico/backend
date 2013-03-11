@@ -13,7 +13,7 @@
 	</thead>
 	<tbody>
 		<tr ng-repeat="log in list">
-			<td></td>
+			<td>{{log.id}}</td>
 			<td>{{log.when}}</td>
 			<td>{{log.action}}</td>
 			<td><a ng-href="#/{{appState.selected_app.key}}/users/{{log.user}}">{{log.user}}</a></td>
