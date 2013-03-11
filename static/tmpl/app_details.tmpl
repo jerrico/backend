@@ -3,24 +3,41 @@
 <div class="row">
 	<h3 class="span">App Details for <span editable editable-saved="saveModel()" ng-model="app.name"></span>&nbsp;<span ng-hide="app.active" class="badge badge-important">disabled</span></h3>
 
-	<div class="pull-right">
-		<a ng-show="app.active" ng-click="app.active = false;
-      saveModel();" class="btn btn-mini btn">Disable</a>&nbsp;
-		<a ng-hide="app.active" ng-click="app.active = true;
-      saveModel();" class="btn btn-mini btn">Enable</a>&nbsp;
+	<div class="pull-right">&nbsp;
   	</div>
+</div>
+<div class="row">
+	<h4 class="span offset2">Settings</h4>
 </div>
 
 <div class="row">
-	<div class="span11 offset1">
-		<h4 class="span">Profiles</h4>
-		<div class="pull-right">
-			<a data-toggle="modal" href="#addProfileModal" class="btn"><i class="icon-plus"></i> Add Profile</a>
-	  	</div>
+	<div class="span offset3">
+		<dl class="dl-horizontal">
+			<dt>Accessible</dt>
+			<dd>
+				<a ng-show="app.active" ng-click="app.active = false;  saveModel();" class="btn btn-mini btn">Disable</a>&nbsp;
+				<a ng-hide="app.active" ng-click="app.active = true;saveModel();" class="btn btn-mini btn">Enable</a>
+  			</dd>
+  			<dt>Payment Provider</dt>
+  			<dd ng-show="appState.userCan.accept_payment">
+
+		      <input type="radio" ng-change="saveModel();" ng-model="app.payment_provider" value="">  (None) <br/>
+		      <input type="radio" ng-change="saveModel();" ng-model="app.payment_provider" value="paymentwall"> PaymentWall <br/>
+  			</dd>
+  			<dd ng-hide="appState.userCan.accept_payment">
+  				<a data-toggle="modal" href="#upgradeNow" title="Only Pro-Accounts can do that" class="btn btn-warning"><i class="icon-leaf"></i>Upgrade to activate payments</a>
+  			</dd>
+		</dl>
 	</div>
 </div>
 <div class="row">
-	<div class="span11 offset2">
+	<h4 class="span4 offset2">Profiles</h4>
+	<div class="span4">
+		<a data-toggle="modal" href="#addProfileModal" class="pull-right btn btn-small"><i class="icon-plus"></i> Add Profile</a>
+  	</div>
+</div>
+<div class="row">
+	<div class="span9 offset3">
 		<ul>
 			<li ng-repeat="profile in app.profiles">
 				<span ng-show="profile.default" class="badge">Default</span>&nbsp;<a href="#/{{app.key}}/profiles/{{profile.id}}">{{profile.name}}</a>
@@ -31,15 +48,13 @@
 </div>
 
 <div class="row">
-	<div class="span11 offset1">
-		<h4>Key and Secret</h4>
+	<h4 class="span offset2">Key and Secret</h4>
+</div>
 
-		<div class="row">
-		    <div class="alert alert-warning span6 offset1">
-		      <p>Your App has the following key and secret:</p>
-		      <p><strong>key:</strong> {{app.key}}</p>
-		      <p><strong>secret:</strong> {{app.secret}}</p>
-		    </div>
-		</div>
-	</div>
+<div class="row">
+    <div class="alert alert-warning span6 offset3">
+      <p>Your App has the following key and secret:</p>
+      <p><strong>key:</strong> {{app.key}}</p>
+      <p><strong>secret:</strong> {{app.secret}}</p>
+    </div>
 </div>

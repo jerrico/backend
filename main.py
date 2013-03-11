@@ -164,7 +164,7 @@ class Profiles(ModelRestApi):
 class AppsManager(ModelRestApi):
     model_cls = AppAccess
     no_item_raise = True
-    writeable = ('name', 'active')
+    writeable = ('name', 'active', "payment_provider",)
 
     def _add_item(self, params):
         name = params.get("name", None)

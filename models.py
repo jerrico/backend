@@ -22,6 +22,7 @@ class AppAccess(ndb.Model):
     created = ndb.DateTimeProperty(auto_now_add=True)
     secret = ndb.StringProperty(required=True, indexed=False)
     domain = ndb.StringProperty(indexed=False)
+    payment_provider = ndb.StringProperty('p', choices=['', 'paymentwall'], default='')
     owner = ndb.UserProperty()
 
     @classmethod

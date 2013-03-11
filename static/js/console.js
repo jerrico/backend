@@ -210,6 +210,7 @@ var consoleApp = angular.module('console', ["console.services"]).
     $.each(appState.timeOptions, function(idx, item) {
       timeNames[item.value] = item.name;
     });
+    $scope.appState = appState;
     $scope.profile = profile;
     appState.profile = profile;
     $scope.saveModel = saveModel = function (){
@@ -363,7 +364,7 @@ var consoleApp = angular.module('console', ["console.services"]).
     appState.userCan = {};
     function updateCan() {
       $rootScope.$apply(function() {
-        appState.userCan = ju.getCans();
+        appState.userCan = ju.getCans(['accept_payment', 'add_profile', 'add_app']);
       });
     }
     ju.on("did", updateCan);
