@@ -237,6 +237,14 @@ var consoleApp = angular.module('console', ["console.services"]).
       profile.restrictions[second_idx] = first;
       saveModel();
     };
+    $scope.addItem = function(key, value){
+      $scope.profile.account[key] = value;
+      saveModel();
+    };
+    $scope.delAccountItem = function(key) {
+      delete $scope.profile.account[key];
+      saveModel();
+    };
   }).
   controller ("DeviceDetailsCtrl", function($scope, appState, Device, LogEntry, $routeParams){
     var app = appState.findAndSelectApp($routeParams.appID);

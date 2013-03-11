@@ -148,6 +148,9 @@ RestrictionTypes = {
     "AccountAmountRestriction": AccountAmountRestriction,
 }
 
+class AccountData(ndb.Expando):
+    pass
+
 
 class Profile(ndb.Model):
     # key = parent => AppAccess
@@ -156,6 +159,7 @@ class Profile(ndb.Model):
     last_change = ndb.DateTimeProperty('l', auto_now=True)
     default = ndb.BooleanProperty('d', default=False)
     allow_per_default = ndb.BooleanProperty('a', default=False)
+    account = ndb.StructuredProperty(AccountData, 'ad')
     # following the restrictions
     restrictions = ndb.LocalStructuredProperty(Restriction, compressed=True,
                 repeated=True)
@@ -167,8 +171,10 @@ class Profile(ndb.Model):
         prepped["last_change"] = date_json_format(prepped["last_change"])
         if short:
             prepped.pop("restrictions")
+            prepped.pop("account")
         else:
             prepped["restrictions"] = [x.prepare_json() for x in self.restrictions]
+            prepped['account'] = self.account and self.account.to_dict() or dict()
         return prepped
 
     def _pre_put_hook(self):
@@ -179,33 +185,29 @@ class Profile(ndb.Model):
                 cur_default.default = False
                 cur_default.put()
 
-class AccountData(ndb.Expando):
-    pass
 
-# for User Info
-class User(ndb.Model):
-    # key = parent=>AppAccess; ID given by app
-    assigned_profile = ndb.KeyProperty('p', kind=Profile, required=False)
-    account = ndb.StructuredProperty(AccountData)
+class UDHelper:
 
     def prepare_json(self):
         resp = {'account': self.account and self.account.to_dict() or dict()}
         resp["assigned_profile"] = self.assigned_profile.get().prepare_json(short=True)
         resp['id'] = self.key.id()
+        resp['uuid'] = self.key.urlsafe()
         return resp
+
+
+# for User Info
+class User(UDHelper, ndb.Model):
+    # key = parent=>AppAccess; ID given by app
+    assigned_profile = ndb.KeyProperty('p', kind=Profile, required=False)
+    account = ndb.StructuredProperty(AccountData, 'a')
 
 
 # for Device Info
-class Device(ndb.Model):
+class Device(UDHelper, ndb.Model):
     # key = parent=>AppAccess; Device-ID given
     assigned_profile = ndb.KeyProperty('p', kind=Profile, required=False)
-    account = ndb.StructuredProperty(AccountData)
-
-    def prepare_json(self):
-        resp = {'account': self.account and self.account.to_dict() or dict()}
-        resp["assigned_profile"] = self.assigned_profile.get().prepare_json(short=True)
-        resp['id'] = self.key.id()
-        return resp
+    account = ndb.StructuredProperty(AccountData, 'a')
 
 
 class LogEntry(ndb.Model):

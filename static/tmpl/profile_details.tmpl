@@ -66,6 +66,36 @@
 <div class="row">
 	<span>Created: {{profile.created}}</span>
 </div>
+
+<div class="row">
+<h3>Default Account</h3>
+<p>Defaults for devices and users when this profile gets applied</p>
+<table>
+  <thead>
+    <tr>
+      <th>Key</th>
+      <th>Value</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody ng-init="{showAdd: false}">
+    <tr ng-repeat="(key, value) in profile.account">
+      <td>{{key}}</td>
+      <td><span editable editable-saved="save()" ng-model="profile.account[key]"></span></td>
+      <td><a ng-click="delAccountItem(key)"><span class="icon icon-remove"></span></td>
+    </tr>
+    <tr ng-hide="showAdd">
+      <td colspan="3" style="text-align: right"><a href="" ng-click="showAdd=true">Add entry</a></td>
+    </tr>
+    <tr ng-form ng-show="showAdd">
+      <td><input type="text" placeholder="Key" ng-model="key"></td>
+      <td><input type="text" placeholder="Value" ng-model="value"></td>
+      <td><button type="submit" ng-click="addItem(key, value)">Add</button>&nbsp;<a href="" ng-click="showAdd=false">Done adding</a></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
 <div class="row">
 	<h3 class="span">Restrictions<h3>
 	<a data-toggle="modal" class="pull-right btn" href="#addRestrictionModal" ><i class="icon-plus"></i> Add Restriction</a>
