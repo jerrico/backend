@@ -103,18 +103,22 @@ def verify_request(method, url, params):
 
 def as_json(fun):
     def wrapped(handler, *args, **kwargs):
-        handler.response.content_type = "application/json"
         wrap_it = not handler.request.params.get("_raw")
         debug = not handler.request.params.get("_debug")
         try:
             res = fun(handler, *args, **kwargs)
+            if isinstance(res, webapp2.Response):
+                # someone with a higher power knows what he is doing
+                return res
             if wrap_it:
                 res = {"status": "success", "result": res}
+            handler.response.content_type = "application/json"
             handler.response.write(json.dumps(res))
         except webapp2.HTTPException, exc:
             if debug:
                 raise
             handler.response.status = exc.code
+            handler.response.content_type = "application/json"
             handler.response.write(json.dumps({
                 "status": "error",
                 "message": "{}".format(exc.message)
@@ -123,6 +127,7 @@ def as_json(fun):
             if debug:
                 raise
             handler.response.status = 500
+            handler.response.content_type = "application/json"
             handler.response.write(json.dumps({
                 "status": "error",
                 "message": "{}".format(exc.message)

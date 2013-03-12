@@ -2,12 +2,14 @@
 
 from utils import verified_api_request, understand_post
 from google.appengine.ext import ndb
-from models import LogEntry, AppAccess, User, Device, Profile, \
-        RestrictionTypes, PerTimeRestriction, BinaryRestriction, TotalAmountRestriction
+from models import (LogEntry, AppAccess, User, Device, Profile,
+        RestrictionTypes, PerTimeRestriction, BinaryRestriction,
+        TotalAmountRestriction, Transaction)
 
 import webapp2
 import json
 import config
+import urllib
 
 
 class ModelRestApi(webapp2.RequestHandler):
@@ -304,26 +306,83 @@ class GetLocalPermissionsState(webapp2.RequestHandler):
                 )
     get = verified_api_request(get, without_key=True)
 
+
+class IssuePayment(webapp2.RequestHandler):
+
+    PROVIDERS = {
+        'paymentwall': {
+            'url': 'http://wallapi.com/api/subscription/?',
+            'replace_key': 'uid'
+        }
+    }
+    @verified_api_request
+    def get(self):
+        if not self.jerry_profile.can("accept_payment"):
+            webapp2.abort(403, "App can't accept payments")
+
+        if not self.app_access.payment_provider:
+            webapp2.abort(501, "No payment provider configured")
+
+        user_id = self.request.GET["uuid"]
+        user = ndb.Key(urlsafe=user_id).get()
+        if not user:
+            webapp2.abort(403, "No uuid given")
+
+        try:
+            compiler = getattr(self, "_compile_{}".format(self.app_access.payment_provider))
+        except:
+            webapp2.abort(403, "Unknown payment provider: {}".format(compiler))
+
+        transaction = Transaction(target=user.key)
+        transaction.put()
+
+        return webapp2.redirect(compiler(transaction.key.id()))
+
+    def _compile_paymentwall(self, transaction_id):
+        params = {
+            'uid': transaction_id,
+            'widget': self.request.GET.get("widget", "p4_1")
+        }
+
+        try:
+            params["key"] = key = self.request.GET["key"]
+            if not key:
+                raise ValueError()
+        except (KeyError, ValueError):
+            webapp2.abort(403, "Paymentwall 'key' missing")
+
+        return 'http://wallapi.com/api/subscription/?{}'.format(urllib.urlencode(params))
+
+
 class PaymentPing(webapp2.RequestHandler):
 
     # these need to be overwritten by the implementation
-    USER_KEY = None
+    TRANSACTION_KEY = None
     PROFILE_KEY = None
 
     def get(self):
         try:
-            user_key = self.request.GET[self.USER_KEY]
-            if not user_key:
+            transaction_key = int(self.request.GET[self.TRANSACTION_KEY])
+            if not transaction_key:
                 raise ValueError
-        except (KeyError, ValueError):
-            webapp2.abort(400, "{} missing. Can't connect to user".format(self.USER_KEY))
+        except Exception, e:
+            webapp2.abort(400, "{} missing. Can't connect to user".format(self.TRANSACTION_KEY))
 
         try:
-            user = ndb.Key(urlsafe=user_key).get()
+            transaction = Transaction.get_by_id(transaction_key)
+            if not transaction:
+                raise ValueError("Transaction not found.")
+            if transaction.state != "open":
+                raise ValueError("Transaction not valid anymore.")
+        except Exception, e:
+            webapp2.abort(400, "Can't find transaction {}: {}".format(transaction_key, e))
+
+        try:
+            user = transaction.target.get()
             if not user:
                 raise ValueError("User not found.")
         except Exception, e:
-            webapp2.abort(400, "Can't understand userkey {}: {}".format(user_key, e))
+            webapp2.abort(400, "Can't find User {}: {}".format(user, e))
 
         try:
             profile_key = self.request.GET[self.PROFILE_KEY]
@@ -332,11 +391,17 @@ class PaymentPing(webapp2.RequestHandler):
 
         app_key = user.key.parent()
 
+        self.response.content_type = "text/plain"
+
+
         # locate the profile
         profile = Profile.query(Profile.payment_id == profile_key, ancestor=app_key).get()
 
         if not profile:
             user.make_log('upgrade_failed', message="No profile for '{}' found.".format(profile_key)).put()
+            transaction.state = "cancelled"
+            transaction.put()
+            self.response.write("profile not found. cancelling")
             return
 
         user.assigned_profile, old_profile = profile.key, user.assigned_profile
@@ -344,16 +409,21 @@ class PaymentPing(webapp2.RequestHandler):
         #    user.account = profile.account
         user.put()
         user.make_log('upgrade', from_profile=old_profile, to_profile=profile.key).put()
+        transaction.state = "accomplished"
+        transaction.put()
 
 
+        self.response.write("everything went just fine")
+        return
 
 
 class PaymentWallPing(PaymentPing):
-    USER_KEY = 'uid'
+    TRANSACTION_KEY = 'uid'
     PROFILE_KEY = 'goodsid'
 
 app = webapp2.WSGIApplication([
     ('/api/v1/pingback/paymentwall', PaymentWallPing),
+    ('/api/v1/issue_payment', IssuePayment),
     ('/api/v1/verify_access', VerifyAccess),
     ('/api/v1/permission_state', GetPermissionsState),
     ('/api/v1/logs', Logger),

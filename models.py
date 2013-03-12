@@ -218,6 +218,13 @@ class Device(UDHelper, ndb.Model):
         return LogEntry.make(self.key.parent(), None, self.key.id(), action=action, **kwargs)
 
 
+class Transaction(ndb.Model):
+    when = ndb.DateTimeProperty('w', auto_now_add=True)
+    changed = ndb.DateTimeProperty('c', auto_now=True)
+    target = ndb.KeyProperty('t')
+    state = ndb.StringProperty('s', choices=['open', 'cancelled', 'accomplished'], default="open")
+
+
 class LogEntry(ndb.Expando):
     # key = parent=>AppAccess
     when = ndb.DateTimeProperty("w", auto_now_add=True)
