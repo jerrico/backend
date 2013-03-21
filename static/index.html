@@ -16,22 +16,177 @@
 
         <script src="/static/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
     </head>
-    <body>
+    <body id="home">
         <!--[if lt IE 7]>
             <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
         <![endif]-->
+        <div id="navbar" ng-controller="NavbarCtrl" class="navbar navbar-fixed-top ng-scope">
+        <div class="navbar-inner">
+          <div class="container">
+            <a class="brand" href="#intro">jerri</a>
+            <ul class="nav" id="main-nav">
+              <li>
+                <a href="#what-is-it">
+                  What is it
+                </a>
+              </li>
+              <li><a href="#why-again">Why again?</a></li>
+              <li><a href="#how-it-works">How it works</a></li>
+              <li><a href="#">What it offers</a></li>
+              <li><a href="#">Pricing</a></li>
+              <li><a href="#">Community</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
 
         <!-- This code is taken from http://twitter.github.com/bootstrap/examples/hero.html -->
-        <div class="container">
-            <div class="hero-unit" style="margin: 100px auto 60px auto">
-                <div class="row">
-                    <div class="span4">
-                        <img src="/static/img/jerri.png" class="span3" title="This is Jerri">
-                        <img src="/static/img/nametag.png" style="margin-top:15px; margin-left: 40px">
+        <section id="intro" style="padding-top: 200px">
+            <div class="container">
+                <div class="span8" style="padding-top:50px">
+                    <h1>Introducing <strong>jerri.co</strong>:</h1>
+                    <h2>The smarter way to monetize apps by facilitating professional profile- and permission management.</h2>
+                </div>
+                <div class="span3">
+                    <img src="/static/img/jerri.png" title="This is Jerri">
+                </div>
+            </div>
+            <div class="bg-grey">
+                <div class="container">
+                    <div class="offset8 span4">
+                        <img src="/static/img/nametag.png">
                     </div>
+                </div>
+            </div>
+        </section>
+        <section id="what-is-it">
+            <div class="bg-grey" style="padding: 200px 0 100px 0">
+                <div class="container">
+                    <div class="row">
+                        <div>
+                            <h1>What is Jerri?</h1>
+                            <h2>Jerri is an innovative profile and permission management tool for web- and mobile apps making per user feature activation a piece of cake. And that way allows you to monetize your apps in totally new ways.</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="why-again">
+            <div class="container" style="padding-top: 100px">
+                <div class="row">
+                    <h1>Why do I want this again?</h1>
+                    <h2>The App Market model is broken and doesn't pay for your development. Jerri does.<h2>
+                </div>
+                <div class="row" style="padding-top: 30px">
+                    <div class="span3">
+                        <p>
+                            <h4><strong>One-Time Fees</strong></h4>
+                            App Markets focus on one-time licence fee monetization models though your app offers an on-going-service requiring all the time service infrastructure and support.
+                        </p>
+                    </div>
+                    <div class="span3 offset1">
+                        <p>
+                            <h4><strong>Insufficient Privileges</strong></h4>
+                            You have only very little control on the usage and the priviliges in your app: either the user has it or she doesn't. Binary on-off is incapable of capturing your business model.
+
+                        </p>
+                    </div>
+                    <div class="span3 offset1">
+                        <p>
+                            <h4><strong>Broken Promotion-Model</strong></h4>
+                            In order to promote your paid app, you have to offer a free app to the user with either limited capabilities or content. In any case leading to having two code bases.
+
+                        </p>
+                    </div>
+
+                    <div class="span3">
+                        <p>
+                            <h4><strong>Missing on-boarding facilities</strong></h4>
+                            And then switching from the promotion-app your users can't access the content of the former app anymore, making upgrading and on-boarding a painful process with low conversions.
+                        </p>
+                    </div>
+
+                    <div class="span3 offset1">
+                        <p>
+                            <h4><strong>no monitization of Upgrades</strong></h4>
+                            Either you offer latest changes as app upgrades so users can migrate the data and will get informed about that, or you add as a new app so people can pay for the upgrade, but you lose all your marketing and promotion on the old app.
+                        </p>
+                    </div>
+
+                    <div class="span3 offset1">
+                        <p>
+                            <h4><strong>High fees</strong></h4>
+                            Payment through the app stores has very high fees and doesn't properly facilitate subscription models for on-going services and feature developments.
+                        </p>
+                    </div>
+                </div>
+                <div class="row" style="padding-top: 100px; padding-bottom: 30px">
+                    <h2>App markets only offer the 70th EULA-Licence-fee monetization model with all its known weaknesses. Jerri offers you a better alternative.</h2>
+                    <div class="span5">
+                        <p>The <strong>One-Time-Licence-Fee-Model</strong>
+                            <ul>
+                                <li>strong new-customers-focus</li>
+                                <li>Big-Chunks-Development to justifying another payment</li>
+                                <li>every launch a risky gamble because of all the time invested</li>
+                                <li>switching versions is painful and has low conversation rates </li>leading to expensive long-term-support of old-versions</li>
+                            </ul>
+                        </p>
+                    </div>
+                    <div class="span5 offset1">
+                        <p>While <strong>fine-grained multi-tier subscription model</strong> offers
+                            <ul>
+                                <li>strong focus on existing customer</li>
+                                <li>constant income flow</li>
+                                <li>easier ways to manage multiple profiles</li>
+                                <li>better upgrade-cycles because of constant improvements</li>
+                                <li>only one app and one code-base and one marketing-history (in the app stores)</li>
+                                
+                            </ul>
+
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-orange" style="padding-top: 35px">
+                <div class="container">
+                    <h3 class="white">Though the advantages obviously speak for the subscription model, only few developers implement it, as it would require a lot of work on their part.</h3>
+                    <h2 class="white">Jerri changes that.</h2>
+                </div>
+            </div>
+        </section>
+
+        <section id="how-it-works">
+            <div class="bg-orange">
+                <div class="container" style="margin-top: 150px">
+                    <h1 class="white">How it works</h1>
+                    <h3 class="whitegrey">Jerri is a hamster. Hamsters love to collect everything, especially food. Usually by putting it into their mouth and then hiding it somewhere. Well, jerri is a very special hamster, because instead of collecting food, it loves to collect user behaviour. And instead of hiding it, jerri runs a web service to collect, analyse and draw conclusions from that data. Specifically on profile and permission management.</h3>
                     <div class="span6">
-                        <h1>Hi there!</h1>
-                        <p>and welcome to <a href="http://www.jerri.co/">jerri.co</a> - the Profile- and Permission-Management Service for App Developers.</p>
+                        <p class="white">So basically the way this works is like this:
+                            <ol class="white">
+                                <li>Your App starts and asks the jerri-library about the User-Permissions-Object with a <code>var jerriUser = jerri.login()</code></li>
+                                <li>The library identifies the Device and User and looks their permission model up via the webservice</li>
+                                <li>Depending on the attached permission-model and already collected data, Jerri returns the permission-object to the Library</li>
+                            </ol>
+                        <p class="white">And from that point on, whenever the app needs to check whether the current user is allowed to use a certain feature in a certain way, it just calls the <code>jerriUser.can('has_cheeseburger')</code> and jerri will answer. <strong>Permission management made easy.</strong></p>
+                    </div>
+                </div>
+            </div>
+            <div class="container" style="margin-top: 10px">
+                <div class="span6">
+                    <p>
+                        Now, Jerri offers a highly flexible range of limitation you can configure for each profile, but for this example case let's say you configured the 'Free'-Profile to be allowed thirty times and then block. Now everytime the app starts, you simply ask <code>jerriUser.can("open_app")</code> and if so, you log that event by saying <code>jerriUser.did("open_app")</code>. Then the library will push this information to the webservice and the next time it syncs (probably when the apps opens), receives the current count left. </p>
+                        <p> This goes until the User opened the app 30 times, from that point on <code>jerriUser.can("open_app")</code> will return <code>False</code> and you simply show a message to the user to upgrade or quit the app. And as jerri identifies a user by its device even without a login and stores the information centrally on the webservice, reinstalling the app won't change a thing: the user can only open the App after she upgraded.</p>
+                        <p>
+                            <strong>Permission management at its best.</strong>
+                        </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="pricing">
+            <div class="container" style="padding-top: 100px">
                         <p>Sorry to inform you, I am operating in private beta at the moment and do not accept any new registrations.</p>
                         <h2>Wanna stay updated?</h2>
                         <form class="form-inline" action="https://docs.google.com/forms/d/12A8mpjps4uXBu6Y3p7T9iygncrxMeeaL9RcJ7dgKjPg/formResponse" method="POST">
@@ -41,10 +196,9 @@
                             </div>
 
                         </form>
-                    </div>
-                </div>
             </div>
-        </div>
+        </section>
+
 
             <hr>
 

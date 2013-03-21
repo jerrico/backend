@@ -1,0 +1,35 @@
+
+body#home section {
+	margin: 0;
+}
+
+body#home .bg-grey {
+	margin: 0;
+	padding: 10px;
+	background-color:#eeeeee;
+}
+
+body#home .bg-orange {
+	margin: 0;
+	padding: 10px;
+	background-color:#ea8f3e;
+	color: #fff;
+}
+
+.white {
+	color: #fff;
+}
+
+.whitegrey  {
+	color: #eee;
+}
+
+
+.two-columns {
+	-moz-column-count:2; /* Firefox */
+	-webkit-column-count:2; /* Safari and Chrome */
+	column-count:2;
+	-moz-column-gap:40px; /* Firefox */
+	-webkit-column-gap:40px; /* Safari and Chrome */
+	column-gap:40px;
+}
