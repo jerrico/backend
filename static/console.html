@@ -20,6 +20,15 @@
     </head>
     <body>
 
+
+      <div class="modal fade hide" id="feedbackModal" role="dialog">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">x</button>
+          <h3>Help & Feedback</h3>
+        </div>
+        <iframe class="modal-body" src="//askbot-rrphp2fhm3.elasticbeanstalk.com/widgets/ask/1/" style="width: 530px; border: none; height: 300px;"></iframe>
+      </div>
+
       <div class="modal fade hide" tw-modal="true" id="addAppModal" ng-controller="AddAppCtrl">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">x</button>
@@ -96,6 +105,9 @@
                     <a href="#/{{appState.selected_app.key}}/details"><i class="icon-cog"></i> Settings</a>
                   </li>
                 </ul>
+              </li>
+              <li class="pull-right"> 
+                <a data-toggle="modal" href="#feedbackModal">Support</a>
               </li>
             </ul>
           </div>
