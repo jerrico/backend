@@ -159,10 +159,10 @@
 
         <section id="how-it-works">
             <div class="bg-orange">
-                <div class="container" style="margin-top: 150px">
+                <div class="container" style="margin-top: 250px">
                     <h1 class="white">How it works</h1>
                     <h3 class="whitegrey">Jerri is a hamster. Hamsters love to collect everything, especially food. Usually by putting it into their mouth and then hiding it somewhere. Well, jerri is a very special hamster, because instead of collecting food, it loves to collect user behaviour. And instead of hiding it, jerri runs a web service to collect, analyse and draw conclusions from that data. Specifically on profile and permission management.</h3>
-                    <div class="span6">
+                    <div class="span5">
                         <p class="white">So basically the way this works is like this:
                             <ol class="white">
                                 <li>Your App starts and asks the jerri-library about the User-Permissions-Object with a <code>var jerriUser = jerri.login()</code></li>
@@ -171,10 +171,13 @@
                             </ol>
                         <p class="white">And from that point on, whenever the app needs to check whether the current user is allowed to use a certain feature in a certain way, it just calls the <code>jerriUser.can('has_cheeseburger')</code> and jerri will answer. <strong>Permission management made easy.</strong></p>
                     </div>
+                    <div class="span5 offset1" style="height:0px; overflow-y: show">
+                        <img src="/static/img/promo/jerri-explained.png">
+                    </div>
                 </div>
             </div>
             <div class="container" style="margin-top: 10px">
-                <div class="span6">
+                <div class="span5">
                     <p>
                         Now, Jerri offers a highly flexible range of limitation you can configure for each profile, but for this example case let's say you configured the 'Free'-Profile to be allowed thirty times and then block. Now everytime the app starts, you simply ask <code>jerriUser.can("open_app")</code> and if so, you log that event by saying <code>jerriUser.did("open_app")</code>. Then the library will push this information to the webservice and the next time it syncs (probably when the apps opens), receives the current count left. </p>
                         <p> This goes until the User opened the app 30 times, from that point on <code>jerriUser.can("open_app")</code> will return <code>False</code> and you simply show a message to the user to upgrade or quit the app. And as jerri identifies a user by its device even without a login and stores the information centrally on the webservice, reinstalling the app won't change a thing: the user can only open the App after she upgraded.</p>
