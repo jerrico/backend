@@ -16,6 +16,20 @@ body#home .bg-orange {
 	color: #fff;
 }
 
+body#home .bg-green {
+	margin: 0;
+	padding: 10px;
+	background-color:#86c246;
+	color: #fff;
+}
+
+body#home .bg-blue {
+	margin: 0;
+	padding: 10px;
+	background-color:#4ab0cc;
+	color: #fff;
+}
+
 .white {
 	color: #fff;
 }
