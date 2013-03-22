@@ -15,7 +15,10 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.2 r9819"
-   sodipodi:docname="jerri_process.svg">
+   sodipodi:docname="jerri_process.svg"
+   inkscape:export-filename="/Users/benjaminkampmann/dev/jerrico/static/img/promo/jerri-explained.png"
+   inkscape:export-xdpi="89.830002"
+   inkscape:export-ydpi="89.830002">
   <defs
      id="defs4">
     <marker
@@ -4516,7 +4519,7 @@
      inkscape:cx="305.76626"
      inkscape:cy="864.57163"
      inkscape:document-units="px"
-     inkscape:current-layer="g8918"
+     inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1392"
      inkscape:window-height="913"
